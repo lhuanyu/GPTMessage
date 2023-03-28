@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftUIX
+import AudioToolbox
 
 class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Codable {
     
@@ -197,16 +198,17 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             scroll?(.bottom)
         }
         
+        AudioServicesPlaySystemSound(1004)
         
         do {
             let stream = try await service.sendMessageStream(text)
             isStreaming = true
+            AudioServicesPlaySystemSound(1301)
             for try await text in stream {
                 streamText += text
                 conversation.reply = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
                 conversations[conversations.count - 1] = conversation
                 withAnimation {
-                    scroll?(.top)
                     scroll?(.bottom)
                 }
             }
