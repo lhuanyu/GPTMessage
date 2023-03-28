@@ -100,9 +100,9 @@ struct ChatGPTApp: App {
 #if os(macOS)
                 NavigationStack {
                     AppSettingsView(configuration: configuration)
-                        .fixedSize()
                         .padding()
                 }
+                .fixedSize()
 #else
                 AppSettingsView(configuration: configuration)
 #endif

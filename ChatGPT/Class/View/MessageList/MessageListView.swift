@@ -95,11 +95,15 @@ struct MessageListView: View {
                                     namespace: animation
                                 ) { conversation in
                                     Task { @MainActor in
-                                        await session.retry(conversation)
+                                        await session.retry(conversation, scroll: {
+                                            scrollToBottom(proxy: proxy, anchor: $0)
+                                        })
                                     }
                                 } editHandler: { conversation in
                                     Task { @MainActor in
-                                        await session.edit(conversation)
+                                        await session.edit(conversation, scroll: {
+                                            scrollToBottom(proxy: proxy, anchor: $0)
+                                        })
                                     }
                                 } deleteHandler: {
                                     withAnimation(after: .milliseconds(500)) {
@@ -112,10 +116,12 @@ struct MessageListView: View {
                                 .id(index)
                             }
                             Text("")
+                                .frame(height: 5)
                                 .frame(maxWidth: .infinity)
                                 .id(bottomID)
                         }
                     }
+#if os(iOS)
                     .preference(key: HeightPreferenceKey.self, value: height)
                     .preference(key: MaxYPreferenceKey.self, value: maxY)
                     .onPreferenceChange(HeightPreferenceKey.self) { value in
@@ -143,12 +149,9 @@ struct MessageListView: View {
                         }
                     }
                     .introspectScrollView(customize: { view in
-#if os(iOS)
                         view.clipsToBounds = false
-#else
-                        view.layer?.masksToBounds = false
-#endif
                     })
+#endif
                     .onTapGesture {
                         isTextFieldFocused = false
                     }

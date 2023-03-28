@@ -148,8 +148,6 @@ struct AppSettingsView: View {
                             }
                         }
 #else
-                        Text(String(format: "%.2f", configuration.temperature))
-                            .foregroundColor(.blue)
                         Slider(value: $configuration.temperature) {
                             Text("Temperature")
                         } minimumValueLabel: {
@@ -174,6 +172,7 @@ struct AppSettingsView: View {
         }
         .navigationTitle("Settings")
 #if os(macOS)
+        .frame(width: 400)
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button("Close") {

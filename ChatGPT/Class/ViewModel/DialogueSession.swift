@@ -143,26 +143,25 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     }
     
     @MainActor
-    func retry(_ conversation: Conversation) async {
+    func retry(_ conversation: Conversation, scroll: ((UnitPoint) -> Void)? = nil) async {
         guard let index = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return
         }
         conversations.remove(at: index)
-        await send(text: conversation.input)
+        await send(text: conversation.input, scroll: scroll)
     }
     
     @MainActor
-    func edit(_ conversation: Conversation) async {
+    func edit(_ conversation: Conversation, scroll: ((UnitPoint) -> Void)? = nil) async {
         guard let index = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return
         }
         conversations.remove(at: index)
-        await send(text: conversation.input)
+        await send(text: conversation.input, scroll: scroll)
     }
     
     @MainActor
     private func send(text: String, scroll: ((UnitPoint) -> Void)? = nil) async {
-        isReplying = true
         var streamText = ""
         var conversation = Conversation(
             isReplying: true,
@@ -176,9 +175,28 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         }
         
         withAnimation {
-            conversations.append(conversation)
             scroll?(.bottom)
         }
+        
+        withAnimation(after: .milliseconds(50)) {
+            self.isReplying = true
+            self.conversations.append(conversation)
+            scroll?(.bottom)
+        }
+        
+        withAnimation(after: .milliseconds(100)) {
+            scroll?(.bottom)
+        }
+        withAnimation(after: .milliseconds(150)) {
+            scroll?(.bottom)
+        }
+        withAnimation(after: .milliseconds(200)) {
+            scroll?(.bottom)
+        }
+        withAnimation(after: .milliseconds(250)) {
+            scroll?(.bottom)
+        }
+        
         
         do {
             let stream = try await service.sendMessageStream(text)
@@ -194,7 +212,10 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             }
             isStreaming = false
         } catch {
-            conversation.errorDesc = error.localizedDescription
+            withAnimation {
+                conversation.errorDesc = error.localizedDescription
+                scroll?(.bottom)
+            }
         }
         
         withAnimation {
