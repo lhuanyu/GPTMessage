@@ -86,14 +86,10 @@ struct ContentView: View {
     
     @ViewBuilder
     private func settingView() -> some View {
-#if os(macOS)
-        NavigationStack {
-            AppSettingsView(configuration: configuration)
-                .padding()
-        }
-        .fixedSize()
-#else
         AppSettingsView(configuration: configuration)
+#if os(macOS)
+            .padding()
+            .fixedSize()
 #endif
     }
 

@@ -174,23 +174,15 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             lastConversationData = appendConversation(conversation)
             scroll?(.bottom)
         }
-        
-        withAnimation(after: .milliseconds(100)) {
-            scroll?(.bottom)
-        }
-        withAnimation(after: .milliseconds(150)) {
-            scroll?(.bottom)
-        }
-        withAnimation(after: .milliseconds(200)) {
-            scroll?(.bottom)
-        }
-        withAnimation(after: .milliseconds(250)) {
-            scroll?(.bottom)
-        }
+
         
         AudioServicesPlaySystemSound(1004)
         
         do {
+            try await Task.sleep(for: .milliseconds(260))
+            withAnimation {
+                scroll?(.bottom)
+            }
             let stream = try await service.sendMessageStream(text)
             isStreaming = true
             AudioServicesPlaySystemSound(1301)
@@ -217,6 +209,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             conversation.isReplying = false
             updateLastConversation(conversation)
             isReplying = false
+            scroll?(.bottom)
             save()
         }
     }

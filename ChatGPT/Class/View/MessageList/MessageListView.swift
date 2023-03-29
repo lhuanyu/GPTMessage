@@ -93,9 +93,9 @@ struct MessageListView: View {
                                     }
                                 } deleteHandler: {
                                     withAnimation(after: .milliseconds(500)) {
-                                        print(session.removeConversation(at: index))
-                                        print(session.service.messages.remove(at: index*2))
-                                        print(session.service.messages.remove(at: index*2))
+                                        session.removeConversation(at: index)
+                                        session.service.messages.remove(at: index*2)
+                                        session.service.messages.remove(at: index*2)
                                     }
                                 }
                                 .id(index)
