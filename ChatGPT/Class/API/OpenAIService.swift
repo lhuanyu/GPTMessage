@@ -92,7 +92,7 @@ class OpenAIService: @unchecked Sendable {
         }
     }
     
-    private func appendNewMessage(input: String, reply: String) {
+    func appendNewMessage(input: String, reply: String) {
         messages.append(.init(role: "user", content: input))
         messages.append(.init(role: "assistant", content: reply))
     }

@@ -33,9 +33,9 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         var systemPrompt: String = "You are a helpful assistant"
         
         init() {
-            self.model = AppConfiguration.shared.model
-            self.temperature = AppConfiguration.shared.temperature
-            self.systemPrompt = AppConfiguration.shared.systemPrompt
+            model = AppConfiguration.shared.model
+            temperature = AppConfiguration.shared.temperature
+            systemPrompt = AppConfiguration.shared.systemPrompt
         }
         
     }
@@ -55,6 +55,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         input = ""
         service = OpenAIService(configuration: configuration)
         service.messages = messages
+        initFinished = true
     }
     
     func encode(to encoder: Encoder) throws {
@@ -86,6 +87,8 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     
     var id = UUID()
     
+    var rawData: DialogueData?
+    
     //MARK: - State
     
     @Published var isReplying: Bool = false
@@ -103,12 +106,13 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     }
     @Published var date = Date()
     
-    
+    private var initFinished = false
     //MARK: - Properties
     
     @Published var configuration: Configuration = Configuration() {
         didSet {
             service.configuration = configuration
+            save()
         }
     }
         
@@ -139,27 +143,17 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         service.removeAllMessages()
         title = "Empty"
         withAnimation { [weak self] in
-            self?.conversations = []
+            self?.removeAllConversations()
         }
     }
     
     @MainActor
     func retry(_ conversation: Conversation, scroll: ((UnitPoint) -> Void)? = nil) async {
-        guard let index = conversations.firstIndex(where: { $0.id == conversation.id }) else {
-            return
-        }
-        conversations.remove(at: index)
+        removeConversation(conversation)
         await send(text: conversation.input, scroll: scroll)
     }
     
-    @MainActor
-    func edit(_ conversation: Conversation, scroll: ((UnitPoint) -> Void)? = nil) async {
-        guard let index = conversations.firstIndex(where: { $0.id == conversation.id }) else {
-            return
-        }
-        conversations.remove(at: index)
-        await send(text: conversation.input, scroll: scroll)
-    }
+    private var lastConversationData: ConversationData?
     
     @MainActor
     private func send(text: String, scroll: ((UnitPoint) -> Void)? = nil) async {
@@ -176,12 +170,8 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         }
         
         withAnimation {
-            scroll?(.bottom)
-        }
-        
-        withAnimation(after: .milliseconds(50)) {
-            self.isReplying = true
-            self.conversations.append(conversation)
+            isReplying = true
+            lastConversationData = appendConversation(conversation)
             scroll?(.bottom)
         }
         
@@ -209,22 +199,160 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
                 conversation.reply = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
                 conversations[conversations.count - 1] = conversation
                 withAnimation {
+                    scroll?(.top)
                     scroll?(.bottom)
                 }
             }
+            lastConversationData?.sync(with: conversation)
             isStreaming = false
         } catch {
             withAnimation {
                 conversation.errorDesc = error.localizedDescription
+                lastConversationData?.sync(with: conversation)
                 scroll?(.bottom)
             }
         }
         
         withAnimation {
             conversation.isReplying = false
-            conversations[conversations.count - 1] = conversation
+            updateLastConversation(conversation)
             isReplying = false
+            save()
         }
     }
 
+}
+
+
+extension DialogueSession {
+    
+    convenience init?(rawData: DialogueData) {
+        self.init()
+        guard let id = rawData.id,
+              let date = rawData.date,
+              let configurationData = rawData.configuration,
+              let conversations = rawData.conversations as? Set<ConversationData> else {
+            return nil
+        }
+        self.rawData = rawData
+        self.id = id
+        self.date = date
+        if let configuration = try? JSONDecoder().decode(Configuration.self, from: configurationData) {
+            self.configuration = configuration
+        }
+        
+        self.conversations = conversations.compactMap { data in
+            if let id = data.id,
+               let input = data.input,
+               let date = data.date {
+                let conversation = Conversation(id: id, input: input, reply: data.reply, errorDesc: data.errorDesc, date: date)
+                return conversation
+            } else {
+                return nil
+            }
+        }
+        self.conversations.sort {
+            $0.date < $1.date
+        }
+        
+        self.conversations.forEach {
+            self.service.appendNewMessage(input: $0.input, reply: $0.reply ?? "")
+        }
+        if !self.conversations.isEmpty {
+            self.conversations[self.conversations.endIndex-1].isLast = true
+        }
+        initFinished = true
+    }
+    
+    @discardableResult
+    func appendConversation(_ conversation: Conversation) -> ConversationData {
+        conversations.append(conversation)
+        let data = ConversationData(context: PersistenceController.shared.container.viewContext)
+        data.id = conversation.id
+        data.date = conversation.date
+        data.input = conversation.input
+        data.reply = conversation.reply
+        rawData?.conversations?.adding(data)
+        data.dialogue = rawData
+        
+        do {
+            try PersistenceController.shared.save()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
+        return data
+    }
+    
+    func updateLastConversation(_ conversation: Conversation) {
+        conversations[conversations.count - 1] = conversation
+        lastConversationData?.sync(with: conversation)
+    }
+    
+    func removeConversation(_ conversation: Conversation) {
+        guard let index = conversations.firstIndex(where: { $0.id == conversation.id }) else {
+            return
+        }
+        removeConversation(at: index)
+    }
+    
+    func removeConversation(at index: Int) {
+        let conversation = conversations.remove(at: index)
+        do {
+            if let conversationsSet = rawData?.conversations as? Set<ConversationData>,
+               let conversationData = conversationsSet.first(where: {
+                $0.id == conversation.id
+            }) {
+                PersistenceController.shared.container.viewContext.delete(conversationData)
+            }
+            try PersistenceController.shared.save()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func removeAllConversations() {
+        conversations.removeAll()
+        do {
+            let viewContext = PersistenceController.shared.container.viewContext
+            if let conversations = rawData?.conversations as? Set<ConversationData> {
+                conversations.forEach(viewContext.delete)
+            }
+            try PersistenceController.shared.save()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func save() {
+        guard initFinished else {
+            return
+        }
+        do {
+            rawData?.date = date
+            rawData?.configuration = try JSONEncoder().encode(configuration)
+            try PersistenceController.shared.save()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    
+}
+
+extension ConversationData {
+    
+    func sync(with conversation: Conversation) {
+        id = conversation.id
+        date = conversation.date
+        input = conversation.input
+        reply = conversation.reply
+        errorDesc = conversation.errorDesc
+        do {
+            try PersistenceController.shared.save()
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
 }

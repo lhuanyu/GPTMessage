@@ -41,6 +41,7 @@
 		E4C65F1829CBEE2400AFA884 /* BottomInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65F1729CBEE2400AFA884 /* BottomInputView.swift */; };
 		E4C65F1C29D0404C00AFA884 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65F1B29D0404B00AFA884 /* DateExtensions.swift */; };
 		E4C65F2029D0649800AFA884 /* DialogueSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65F1F29D0649800AFA884 /* DialogueSettingsView.swift */; };
+		E4E99BC729D415FF00C0FCBD /* DialogueListPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,7 @@
 		E4C65F1729CBEE2400AFA884 /* BottomInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomInputView.swift; sourceTree = "<group>"; };
 		E4C65F1B29D0404B00AFA884 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		E4C65F1F29D0649800AFA884 /* DialogueSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueSettingsView.swift; sourceTree = "<group>"; };
+		E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueListPlaceholderView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,8 +153,8 @@
 			children = (
 				E4C65ED129CA9F7800AFA884 /* Class */,
 				E4C65EA129CA9E7E00AFA884 /* ChatGPTApp.swift */,
-				E4C65EA329CA9E7E00AFA884 /* Persistence.swift */,
 				E4C65EA829CA9E7E00AFA884 /* ContentView.swift */,
+				E4C65EA329CA9E7E00AFA884 /* Persistence.swift */,
 				E4C65EE829CA9F7800AFA884 /* Resource */,
 				E4C65EAC29CA9E7F00AFA884 /* ChatGPT.entitlements */,
 				E4C65EA529CA9E7E00AFA884 /* ChatGPT.xcdatamodeld */,
@@ -234,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				E4C65EE029CA9F7800AFA884 /* DialogueSessionListView.swift */,
+				E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */,
 			);
 			path = DialogueList;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4C65F1C29D0404C00AFA884 /* DateExtensions.swift in Sources */,
+				E4E99BC729D415FF00C0FCBD /* DialogueListPlaceholderView.swift in Sources */,
 				E4C65EA229CA9E7E00AFA884 /* ChatGPTApp.swift in Sources */,
 				E4C65EEF29CA9F7800AFA884 /* MessageListView.swift in Sources */,
 				E4C65F2029D0649800AFA884 /* DialogueSettingsView.swift in Sources */,

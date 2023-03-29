@@ -11,9 +11,9 @@ struct Conversation: Identifiable, Codable, Equatable {
     
     var id = UUID()
     
-    var isReplying: Bool
+    var isReplying: Bool = false
     
-    var isLast: Bool
+    var isLast: Bool = false
     
     var input: String
     

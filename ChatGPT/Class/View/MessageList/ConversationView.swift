@@ -14,9 +14,7 @@ struct AnimationID {
 }
 
 struct ConversationView: View {
-    
-    
-    @Environment(\.colorScheme) private var colorScheme
+        
     let conversation: Conversation
     let namespace: Namespace.ID
     let retryHandler: (Conversation) -> Void
@@ -24,7 +22,6 @@ struct ConversationView: View {
     @State var isEditing = false
     @FocusState var isFocused: Bool
     @State var editingMessage: String = ""
-    let editHandler: (Conversation) -> Void
     var deleteHandler: (() -> Void)?
 
     var body: some View {
@@ -146,7 +143,7 @@ struct ConversationView: View {
                 if editingMessage != conversation.input {
                     var message = conversation
                     message.input = editingMessage
-                    editHandler(message)
+                    retryHandler(message)
                 }
             } else {
                 editingMessage = conversation.input
@@ -289,22 +286,14 @@ struct MessageRowView_Previews: PreviewProvider {
             ScrollView {
                 ConversationView(conversation: message, namespace: animation,  retryHandler: { message in
                     
-                }, editHandler: { message in
-                    
                 })
                 ConversationView(conversation: message2, namespace: animation,  retryHandler: { message in
-                    
-                }, editHandler: { message in
                     
                 })
                 ConversationView(conversation: message3, namespace: animation,  retryHandler: { message in
                     
-                }, editHandler: { message in
-                    
                 })
                 ConversationView(conversation: message4, namespace: animation,  retryHandler: { message in
-                    
-                }, editHandler: { message in
                     
                 })
             }

@@ -12,7 +12,6 @@ import Introspect
 struct MessageListView: View {
     
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.SaveAction) var saveAction
     @ObservedObject var session: DialogueSession
     @FocusState var isTextFieldFocused: Bool
     
@@ -20,11 +19,6 @@ struct MessageListView: View {
     
     var body: some View {
         contentView
-            .onChange(of: isShowSettingsView) { show in
-                if !show {
-                    saveAction?()
-                }
-            }
 #if os(iOS)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -48,7 +42,6 @@ struct MessageListView: View {
                     Button {
                         guard !session.isReplying else { return }
                         session.clearMessages()
-                        saveAction?()
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -61,7 +54,6 @@ struct MessageListView: View {
                     Button {
                         guard !session.isReplying else { return }
                         session.clearMessages()
-                        saveAction?()
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -99,18 +91,11 @@ struct MessageListView: View {
                                             scrollToBottom(proxy: proxy, anchor: $0)
                                         })
                                     }
-                                } editHandler: { conversation in
-                                    Task { @MainActor in
-                                        await session.edit(conversation, scroll: {
-                                            scrollToBottom(proxy: proxy, anchor: $0)
-                                        })
-                                    }
                                 } deleteHandler: {
                                     withAnimation(after: .milliseconds(500)) {
-                                        print(session.conversations.remove(at: index))
+                                        print(session.removeConversation(at: index))
                                         print(session.service.messages.remove(at: index*2))
                                         print(session.service.messages.remove(at: index*2))
-                                        saveAction?()
                                     }
                                 }
                                 .id(index)
@@ -202,7 +187,7 @@ struct MessageListView: View {
 #endif
             .onChange(of: session.isReplying) { isReplying in
                 if !isReplying {
-                    saveAction?()
+
                 }
             }
         }

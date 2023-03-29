@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct DialogueSessionListView: View {
-    
+    @Environment(\.managedObjectContext) private var viewContext
+
     @Binding var dialogueSessions: [DialogueSession]
     @Binding var selectedDialogueSession: DialogueSession?
-        
+    
+    var deleteHandler: (IndexSet) -> Void
+    var deleteDialogueHandler: (DialogueSession) -> Void
+
     var body: some View {
         List(selection: $selectedDialogueSession) {
             ForEach(dialogueSessions) { session in
@@ -50,10 +54,7 @@ struct DialogueSessionListView: View {
                 }
                 .contextMenu {
                     Button(role: .destructive) {
-                        guard let index = dialogueSessions.firstIndex(of: session) else {
-                            return
-                        }
-                        dialogueSessions.remove(at: index)
+                        deleteDialogueHandler(session)
                         if session == selectedDialogueSession {
                             selectedDialogueSession = nil
                         }
@@ -99,10 +100,7 @@ struct DialogueSessionListView: View {
                 }
                 .contextMenu {
                     Button(role: .destructive) {
-                        guard let index = dialogueSessions.firstIndex(of: session) else {
-                            return
-                        }
-                        dialogueSessions.remove(at: index)
+                        deleteDialogueHandler(session)
                         if session == selectedDialogueSession {
                             selectedDialogueSession = nil
                         }
@@ -117,12 +115,10 @@ struct DialogueSessionListView: View {
 #endif
             }
             .onDelete { indexSet in
-                dialogueSessions.remove(atOffsets: indexSet)
+                deleteHandler(indexSet)
             }
         }
-        .onAppear() {
-            updateList()
-        }
+        .onAppear(perform: updateList)
 #if os(iOS)
         .listStyle(.plain)
         .navigationTitle(Text("ChatGPT"))

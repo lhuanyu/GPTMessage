@@ -12,45 +12,102 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \DialogueData.date, ascending: false)],
         animation: .default)
-    private var items: FetchedResults<Item>
+    private var items: FetchedResults<DialogueData>
+    
+    @StateObject var configuration = AppConfiguration.shared
+    @State var dialogueSessions: [DialogueSession] = []
+    @State var selectedDialogueSession: DialogueSession?
+    
+    @State var isShowSettingView = false
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+        NavigationSplitView {
+            contentView()
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button {
+                            isShowSettingView = true
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                        }
+                    }
+                    ToolbarItem(placement: .automatic) {
+                        Button {
+                            addItem()
+                        } label: {
+                            Image(systemName: "square.and.pencil")
+                        }
                     }
                 }
-                .onDelete(perform: deleteItems)
+        } detail: {
+            ZStack {
+                if let selectedDialogueSession = selectedDialogueSession {
+                    MessageListView(session:selectedDialogueSession)
+                }
             }
-            .toolbar {
 #if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
 #endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
+        }
+#if os(macOS)
+        .frame(minWidth: 800, minHeight: 500)
+        .background(.secondarySystemBackground)
+#endif
+        .sheet(isPresented: $isShowSettingView) {
+            settingView()
+        }
+        .onAppear() {
+            dialogueSessions = items.compactMap {
+                DialogueSession(rawData: $0)
             }
-            Text("Select an item")
+        }
+
+
+    }
+    
+    
+    @ViewBuilder
+    func contentView() -> some View {
+        if dialogueSessions.isEmpty {
+            DialogueListPlaceholderView()
+        } else {
+            DialogueSessionListView(
+                dialogueSessions: $dialogueSessions,
+                selectedDialogueSession: $selectedDialogueSession) {
+                    deleteItems(offsets: $0)
+                } deleteDialogueHandler: {
+                    deleteItem($0)
+                }
         }
     }
+    
+    @ViewBuilder
+    private func settingView() -> some View {
+#if os(macOS)
+        NavigationStack {
+            AppSettingsView(configuration: configuration)
+                .padding()
+        }
+        .fixedSize()
+#else
+        AppSettingsView(configuration: configuration)
+#endif
+    }
+
 
     private func addItem() {
         withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
             do {
-                try viewContext.save()
+                let session = DialogueSession()
+                dialogueSessions.insert(session, at: 0)
+                let newItem = DialogueData(context: viewContext)
+                newItem.id = session.id
+                newItem.date = session.date
+                newItem.configuration =  try JSONEncoder().encode(session.configuration)
+                try PersistenceController.shared.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
@@ -62,10 +119,11 @@ struct ContentView: View {
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
+            dialogueSessions.remove(atOffsets: offsets)
             offsets.map { items[$0] }.forEach(viewContext.delete)
 
             do {
-                try viewContext.save()
+                try PersistenceController.shared.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
                 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
@@ -74,17 +132,25 @@ struct ContentView: View {
             }
         }
     }
-}
+    
+    private func deleteItem(_ session: DialogueSession) {
+        withAnimation {
+            dialogueSessions.removeAll {
+                $0.id == session.id
+            }
+            if let item = session.rawData {
+                viewContext.delete(item)
+            }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+            do {
+                try PersistenceController.shared.save()
+            } catch {
+                // Replace this implementation with code to handle the error appropriately.
+                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                let nsError = error as NSError
+                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            }
+        }
     }
+    
 }
