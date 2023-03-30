@@ -7,16 +7,29 @@ This is what the app looks like on iOS:
   <img src="screenshot1.PNG" width="350" /> 
 </p>
 
+And macOS:
+<p float="left">
+  <img src="screenshot_macOS.PNG"/>
+</p>
+
 ## Usage
 
 Set your OpenAI API key in the AppConfiguration.
 
 ```swift
-
 class AppConfiguration: ObservableObject {
         
     @AppStorage("configuration.key") var key = "OpenAI API Key"
     
 }
-
 ```
+## Prompts
+
+Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)**.
+### iOS
+
+Click the person icon.
+
+### macOS
+
+Type '/' to show the prompts list.

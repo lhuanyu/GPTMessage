@@ -17,7 +17,7 @@ import Foundation
 //    "enable": true
 //  },
 
-struct Prompt: Codable, Identifiable {
+struct Prompt: Codable, Identifiable, Hashable {
     var id: String {
         cmd
     }

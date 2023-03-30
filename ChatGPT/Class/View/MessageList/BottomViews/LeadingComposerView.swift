@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LeadingComposerView: View {
-        
+    
     @Binding var defautPrompt: String
     
     @State var selectedPromt: Prompt?
@@ -26,7 +26,7 @@ struct LeadingComposerView: View {
     var body: some View {
         HStack(spacing: 16) {
             Button {
-
+                
             } label: {
                 Image(systemName: "camera.fill")
                     .resizable()
@@ -34,6 +34,7 @@ struct LeadingComposerView: View {
                     .frame(height: height)
                     .foregroundColor(.gray)
             }
+#if os(iOS)
             Menu {
                 ForEach(PromptManager.shared.prompts) { promt in
                     Button {
@@ -52,12 +53,13 @@ struct LeadingComposerView: View {
             }
             .menuIndicator(.hidden)
             .ignoresSafeArea(.keyboard)
+#endif
         }
         .macButtonStyle()
         .padding(.horizontal, 8)
         .frame(maxHeight: 32)
     }
-
+    
 }
 
 struct LeadingComposerView_Previews: PreviewProvider {

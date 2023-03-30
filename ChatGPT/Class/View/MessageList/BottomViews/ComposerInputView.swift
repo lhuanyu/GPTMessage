@@ -31,7 +31,7 @@ struct ComposerInputView: View {
         17
 #endif
     }
-        
+    
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
             TextField("Ask anything", text: $input, axis: .vertical)
@@ -43,9 +43,9 @@ struct ComposerInputView: View {
                 .onTapGesture {
                     scroll?()
                 }
-            #if os(macOS)
+#if os(macOS)
                 .textFieldStyle(.plain)
-            #endif
+#endif
             if !input.isEmpty {
                 Button {
                     send(input)
@@ -59,15 +59,19 @@ struct ComposerInputView: View {
                 }
                 .keyboardShortcut(.defaultAction)
             } else {
+#if os(iOS)
                 Button {
-
+                    
                 } label: {
-                    Image(systemName: "waveform.circle.fill")
+                    Image(systemName: "mic")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: size, height: size)
+                        .frame(width: 18, height: 18)
                         .foregroundColor(.secondary)
+                        .opacity(0.7)
                 }
+                .offset(x:-4, y: -4)
+#endif
             }
         }
         .macButtonStyle()
