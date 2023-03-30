@@ -9,7 +9,7 @@ This is what the app looks like on iOS:
 
 And macOS:
 <p float="left">
-  <img src="screenshot_macOS.PNG"/>
+  <img src="screenshot_macOS.png" width="900"/>
 </p>
 
 ## Usage
