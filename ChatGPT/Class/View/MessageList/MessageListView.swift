@@ -269,6 +269,7 @@ struct MessageListView: View {
                             }
                             .id(index)
                             .tag(index)
+                            .toolTip(prompt.prompt)
                         }
                     }
                     .border(.blue, width: 2)
