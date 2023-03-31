@@ -125,7 +125,13 @@ struct DialogueSessionListView: View {
 #else
         .frame(minWidth: 300)
         .onChange(of: selectedDialogueSession) { _ in
-            updateList()
+            if selectedDialogueSession != nil {
+                let session = selectedDialogueSession
+                updateList()
+                selectedDialogueSession = session
+            } else {
+                updateList()
+            }
         }
 #endif
         
@@ -148,5 +154,15 @@ extension Date {
             return timeString(ofStyle: .short)
         }
         return dateString(ofStyle: .short)
+    }
+}
+
+import Combine
+
+extension Published.Publisher {
+    var didSet: AnyPublisher<Value, Never> {
+        // Any better ideas on how to get the didSet semantics?
+        // This works, but I'm not sure if it's ideal.
+        self.receive(on: RunLoop.main).eraseToAnyPublisher()
     }
 }

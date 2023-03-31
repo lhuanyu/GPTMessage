@@ -226,6 +226,7 @@ struct MessageListView: View {
                 userHasChangedSelection = false
                 session.bubbleText = prompts[selectedPromptIndex].prompt
                 session.input = prompts[selectedPromptIndex].prompt
+                self.selectedPromptIndex = nil
             } else {
                 session.bubbleText = session.input
             }
