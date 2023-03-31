@@ -154,13 +154,17 @@ struct AppSettingsView: View {
             }
             
 #if os(iOS)
-            Section {
+            Section("Prompt") {
                 NavigationLink {
                     PromptsListView()
                 } label: {
                     Text("Sync Prompts")
                 }
-                
+                NavigationLink {
+                    CustomPromptsView()
+                } label: {
+                    Text("Custome Prompts")
+                }
             }
 #else
             Section {

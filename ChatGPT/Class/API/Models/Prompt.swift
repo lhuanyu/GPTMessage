@@ -33,32 +33,72 @@ class PromptManager: ObservableObject {
     
     static let shared = PromptManager()
     
-    private(set) var prompts: [Prompt] = []
+    @Published private(set) var prompts: [Prompt] = []
+    
+    @Published private(set) var syncedPrompts: [Prompt] = []
+    
+    @Published var customPrompts = [Prompt]()
+    
+    func addCustomPrompt(_ prompt: Prompt) {
+        customPrompts.append(prompt)
+        mergePrompts()
+        saveCustomPrompts()
+    }
+    
+    private func saveCustomPrompts() {
+        do {
+            let data = try JSONEncoder().encode(customPrompts)
+            try data.write(to: customFileURL, options: .atomic)
+            print("[Prompt Manager] Write user custom prompts to \(customFileURL).")
+        } catch let error  {
+            print(error.localizedDescription)
+        }
+    }
+    
+    func removeCustomPrompts(atOffsets indexSet: IndexSet) {
+        customPrompts.remove(atOffsets: indexSet)
+        saveCustomPrompts()
+    }
     
     init() {
-        guard let data = jsonData() else {
-            return
-        }
-        guard let prompts = try? JSONDecoder().decode([Prompt].self, from: data) else {
-            return
-        }
-        self.prompts = prompts.sorted(by: {
+        loadCachedPrompts()
+        loadCustomPrompts()
+        mergePrompts()
+        print("[Prompt Manager] Load local prompts. Count: \(prompts.count).")
+    }
+    
+    private func mergePrompts() {
+        prompts = (syncedPrompts + customPrompts).sorted(by: {
             $0.act < $1.act
         })
-        print("[Prompt Manager] Load local prompts. Count: \(prompts.count).")
     }
     
     private func jsonData() -> Data? {
         if let data = try? Data(contentsOf: cachedFileURL) {
-            print("[Prompt Manager] Load cached prompts.")
             return data
         }
         if let path = Bundle.main.path(forResource: "chatgpt_prompts", ofType: "json"),
            let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-            print("[Prompt Manager] Load bundle prompts.")
             return data
         }
         return nil
+    }
+    
+    private func loadCachedPrompts() {
+        if let data = jsonData(),
+           let prompts = try? JSONDecoder().decode([Prompt].self, from: data) {
+            syncedPrompts = prompts
+            print("[Prompt Manager] Load cached prompts. Count: \(syncedPrompts.count).")
+        }
+    }
+    
+    private func loadCustomPrompts() {
+        guard let data = try? Data(contentsOf: customFileURL),
+              let prompts = try? JSONDecoder().decode([Prompt].self, from: data) else {
+            return
+        }
+        customPrompts = prompts
+        print("[Prompt Manager] Load user custom prompts. Count: \(customPrompts.count).")
     }
     
     @Published private(set) var isSyncing: Bool = false
@@ -95,13 +135,13 @@ class PromptManager: ObservableObject {
                     prompts.append(.init(cmd: cmd, act: act, prompt: prompt, tags: ["chatgpt-prompts"]))
                 }
             })
-            self.prompts = prompts.sorted(by: {
-                $0.act < $1.act
-            })
-            print("[Prompt Manager] Sync completed. Count: \(prompts.count).")
+            syncedPrompts = prompts
+            mergePrompts()
+
+            print("[Prompt Manager] Sync completed. Count: \(syncedPrompts.count). Total: \(self.prompts.count).")
             let data = try JSONEncoder().encode(prompts)
             try data.write(to: cachedFileURL, options: .atomic)
-            print("[Prompt Manager] Write JSON file to \(cachedFileURL).")
+            print("[Prompt Manager] Write synced prompts to \(cachedFileURL).")
             lastSyncAt = Date().timeIntervalSince1970
         } catch let error as CSVParseError {
             print(error.localizedDescription)
@@ -112,6 +152,10 @@ class PromptManager: ObservableObject {
     
     private var cachedFileURL: URL {
         URL.documentsDirectory.appendingPathComponent("chatgpt_prompts.json")
+    }
+    
+    private var customFileURL: URL {
+        URL.documentsDirectory.appendingPathComponent("custom_prompts.json")
     }
     
 }

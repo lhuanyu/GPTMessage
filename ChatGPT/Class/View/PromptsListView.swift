@@ -40,21 +40,9 @@ struct PromptsListView: View {
             }
 
             Section {
-                ForEach(manager.prompts) { prompt in
+                ForEach(manager.syncedPrompts) { prompt in
                     NavigationLink {
-                        Form {
-                            Section {
-                                HStack {
-                                    Image(systemName: "terminal.fill")
-                                    Text("/\(prompt.cmd)")
-                                }
-                                
-                            }
-                            Section("Prompt") {
-                                Text(prompt.prompt)
-                            }
-                        }
-                        .navigationTitle(prompt.act)
+                        PromptDetailView(prompt: prompt)
                     } label: {
                         Text(prompt.act)
                     }
@@ -64,6 +52,29 @@ struct PromptsListView: View {
         }
         .navigationTitle("Prompts")
     }
+}
+
+struct PromptDetailView: View {
+    
+    let prompt: Prompt
+    
+    var body: some View {
+        Form {
+            Section {
+                HStack {
+                    Image(systemName: "terminal.fill")
+                    Text("/\(prompt.cmd)")
+                }
+                
+            }
+            Section("Prompt") {
+                Text(prompt.prompt)
+                    .textSelection(.enabled)
+            }
+        }
+        .navigationTitle(prompt.act)
+    }
+    
 }
 
 struct PromptsListView_Previews: PreviewProvider {

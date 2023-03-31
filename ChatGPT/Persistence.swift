@@ -37,7 +37,7 @@ struct PersistenceController {
                  */
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             } else {
-                print(storeDescription)
+                print("[CoreData] \(storeDescription.description)")
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true
