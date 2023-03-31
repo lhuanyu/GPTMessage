@@ -78,9 +78,6 @@ struct MessageListView: View {
             ZStack(alignment: .bottomLeading) {
                 VStack(spacing: 0) {
                     GeometryReader { geo in
-                        let frame = geo.frame(in: .global)
-                        let height = frame.height
-                        let maxY = frame.maxY
                         ScrollView {
                             VStack(spacing: 0) {
                                 ForEach(enumerating: Array(session.conversations.enumerated())) { index, conversation in
@@ -109,8 +106,8 @@ struct MessageListView: View {
                             }
                         }
     #if os(iOS)
-                        .preference(key: HeightPreferenceKey.self, value: height)
-                        .preference(key: MaxYPreferenceKey.self, value: maxY)
+                        .preference(key: HeightPreferenceKey.self, value: geo.frame(in: .global).height)
+                        .preference(key: MaxYPreferenceKey.self, value: geo.frame(in: .global).maxY)
                         .onPreferenceChange(HeightPreferenceKey.self) { value in
                             if let value = value {
                                 if keyboadWillShow {
@@ -262,9 +259,11 @@ struct MessageListView: View {
                             let prompt = prompts[index]
                             HStack {
                                 Text("/\(prompt.cmd)")
+                                    .lineLimit(1)
                                     .bold()
                                 Spacer()
                                 Text(prompt.act)
+                                    .lineLimit(1)
                                     .foregroundColor(.secondaryLabel)
                             }
                             .id(index)
@@ -273,7 +272,7 @@ struct MessageListView: View {
                         }
                     }
                     .border(.blue, width: 2)
-                    .frame(width: 600, height: searchListHeight)
+                    .frame(height: searchListHeight)
                     .onChange(of: selectedPromptIndex) { selectedPromptIndex in
                         if let selectedPromptIndex = selectedPromptIndex {
                             promptListProxy.scrollTo(selectedPromptIndex, anchor: .bottom)
@@ -281,8 +280,9 @@ struct MessageListView: View {
                     }
                 }
             }
-            .frame(maxHeight: .infinity)
+            .frame(minWidth: 400, maxHeight: .infinity)
             .padding(.leading, 62)
+            .padding(.trailing, 40)
             .padding(.bottom, 50)
             .onAppear() {
                 selectedPromptIndex = 0

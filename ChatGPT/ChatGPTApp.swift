@@ -15,6 +15,9 @@ struct ChatGPTApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear() {
+                    PromptManager.shared.sync()
+                }
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

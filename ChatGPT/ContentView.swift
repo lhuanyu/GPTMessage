@@ -50,6 +50,8 @@ struct ContentView: View {
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.visible, for: .navigationBar)
+#else
+            .frame(minWidth: 500)
 #endif
         }
 #if os(macOS)
@@ -86,10 +88,25 @@ struct ContentView: View {
     
     @ViewBuilder
     private func settingView() -> some View {
-        AppSettingsView(configuration: configuration)
 #if os(macOS)
+        AppSettingsView(configuration: configuration)
             .padding()
             .fixedSize()
+#else
+        NavigationStack {
+            AppSettingsView(configuration: configuration)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem {
+                        Button {
+                            isShowSettingView = false
+                        } label: {
+                            Text("Done")
+                                .bold()
+                        }
+                    }
+                }
+        }
 #endif
     }
 

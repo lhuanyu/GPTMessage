@@ -43,6 +43,8 @@
 		E4C65F2029D0649800AFA884 /* DialogueSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65F1F29D0649800AFA884 /* DialogueSettingsView.swift */; };
 		E4E99BC729D415FF00C0FCBD /* DialogueListPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */; };
 		E4E99BC929D5AF9F00C0FCBD /* ToolTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BC829D5AF9F00C0FCBD /* ToolTipView.swift */; };
+		E4E99BCC29D5D58700C0FCBD /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = E4E99BCB29D5D58700C0FCBD /* SwiftCSV */; };
+		E4E99BD029D681A000C0FCBD /* PromptsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +101,7 @@
 		E4C65F1F29D0649800AFA884 /* DialogueSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueSettingsView.swift; sourceTree = "<group>"; };
 		E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueListPlaceholderView.swift; sourceTree = "<group>"; };
 		E4E99BC829D5AF9F00C0FCBD /* ToolTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipView.swift; sourceTree = "<group>"; };
+		E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptsListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4E99BCC29D5D58700C0FCBD /* SwiftCSV in Frameworks */,
 				E4C65F0E29CAA06600AFA884 /* Splash in Frameworks */,
 				E4C65F0229CAA01800AFA884 /* Introspect in Frameworks */,
 				E4C65F0529CAA02800AFA884 /* SwiftUIX in Frameworks */,
@@ -214,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */,
+				E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */,
 				E4C65EDF29CA9F7800AFA884 /* DialogueList */,
 				E4C65ED629CA9F7800AFA884 /* MessageList */,
 				E4C65F1629CB450900AFA884 /* UI */,
@@ -321,6 +326,7 @@
 				E4C65F0429CAA02800AFA884 /* SwiftUIX */,
 				E4C65F0D29CAA06600AFA884 /* Splash */,
 				E4C65F1029CAA08400AFA884 /* MarkdownUI */,
+				E4E99BCB29D5D58700C0FCBD /* SwiftCSV */,
 			);
 			productName = ChatGPT;
 			productReference = E4C65E9E29CA9E7E00AFA884 /* ChatGPT.app */;
@@ -399,6 +405,7 @@
 				E4C65F0329CAA02800AFA884 /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				E4C65F0C29CAA06600AFA884 /* XCRemoteSwiftPackageReference "Splash" */,
 				E4C65F0F29CAA08400AFA884 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+				E4E99BCA29D5D58700C0FCBD /* XCRemoteSwiftPackageReference "SwiftCSV" */,
 			);
 			productRefGroup = E4C65E9F29CA9E7E00AFA884 /* Products */;
 			projectDirPath = "";
@@ -461,6 +468,7 @@
 				E4C65EF329CA9F7800AFA884 /* ReplyingIndicatorView.swift in Sources */,
 				E4C65EED29CA9F7800AFA884 /* DialogueSession.swift in Sources */,
 				E4C65EF629CA9F7800AFA884 /* AppSettingsView.swift in Sources */,
+				E4E99BD029D681A000C0FCBD /* PromptsListView.swift in Sources */,
 				E4C65EF129CA9F7800AFA884 /* MessageMarkdownView.swift in Sources */,
 				E4C65EF529CA9F7800AFA884 /* ComposerInputView.swift in Sources */,
 				E4C65EFC29CA9F7800AFA884 /* OpenAIService.swift in Sources */,
@@ -858,6 +866,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		E4E99BCA29D5D58700C0FCBD /* XCRemoteSwiftPackageReference "SwiftCSV" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftcsv/SwiftCSV.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -880,6 +896,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E4C65F0F29CAA08400AFA884 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
+		};
+		E4E99BCB29D5D58700C0FCBD /* SwiftCSV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E4E99BCA29D5D58700C0FCBD /* XCRemoteSwiftPackageReference "SwiftCSV" */;
+			productName = SwiftCSV;
 		};
 /* End XCSwiftPackageProductDependency section */
 

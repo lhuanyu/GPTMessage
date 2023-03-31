@@ -97,73 +97,84 @@ struct AppSettingsView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        VStack(spacing: 0) {
-#if os(iOS)
-            HStack {
-                Spacer()
-                Button("Done") {
-                    dismiss()
+        Form {
+            Section(header: "Display") {
+                HStack {
+                    Toggle("Markdown Enabled", isOn: $configuration.isMarkdownEnabled)
+                    Spacer()
                 }
-                .padding()
             }
-            .background(.systemGroupedBackground)
+            Section(header: "Model") {
+                HStack {
+#if os(iOS)
+                    Text("Model")
+                        .fixedSize()
+                    Spacer()
 #endif
-            Form {
-                Section(header: "Display") {
-                    HStack {
-                        Toggle("Markdown Enabled", isOn: $configuration.isMarkdownEnabled)
-                        Spacer()
+                    Picker("Model", selection: $selectedModel) {
+                        ForEach(models, id: \.self) { model in
+                            Text(model.rawValue)
+                                .tag(model)
+                        }
                     }
+#if os(iOS)
+                    .labelsHidden()
+#endif
+                    .onChange(of: selectedModel, perform: updateModes(_:))
                 }
-                Section(header: "Model") {
-                    HStack {
+                VStack {
 #if os(iOS)
-                        Text("Model")
-                            .fixedSize()
-                        Spacer()
-#endif
-                        Picker("Model", selection: $selectedModel) {
-                            ForEach(models, id: \.self) { model in
-                                Text(model.rawValue)
-                                    .tag(model)
-                            }
-                        }
-#if os(iOS)
-                        .labelsHidden()
-#endif
-                        .onChange(of: selectedModel, perform: updateModes(_:))
-                    }
-                    VStack {
-#if os(iOS)
-                        Stepper(value: $configuration.temperature, in: 0...1, step: 0.1) {
-                            HStack {
-                                Text("Temperature")
-                                Spacer()
-                                Text(String(format: "%.1f", configuration.temperature))
-                                    .padding(.horizontal)
-                                    .height(32)
-                                    .width(60)
-                                    .background(Color.secondarySystemFill)
-                                    .cornerRadius(8)
-                            }
-                        }
-#else
-                        Slider(value: $configuration.temperature) {
+                    Stepper(value: $configuration.temperature, in: 0...1, step: 0.1) {
+                        HStack {
                             Text("Temperature")
-                        } minimumValueLabel: {
-                            Text("0")
-                        } maximumValueLabel: {
-                            Text("1")
+                            Spacer()
+                            Text(String(format: "%.1f", configuration.temperature))
+                                .padding(.horizontal)
+                                .height(32)
+                                .width(60)
+                                .background(Color.secondarySystemFill)
+                                .cornerRadius(8)
                         }
+                    }
+#else
+                    Slider(value: $configuration.temperature) {
+                        Text("Temperature")
+                    } minimumValueLabel: {
+                        Text("0")
+                    } maximumValueLabel: {
+                        Text("1")
+                    }
 #endif
-                    }
-                    HStack {
-                        Image(systemName: "key")
-                        Spacer()
-                        TextField("", text: $configuration.key)
-                    }
+                }
+                HStack {
+                    Image(systemName: "key")
+                    Spacer()
+                    TextField("", text: $configuration.key)
                 }
             }
+            
+#if os(iOS)
+            Section {
+                NavigationLink {
+                    PromptsListView()
+                } label: {
+                    Text("Sync Prompts")
+                }
+                
+            }
+#else
+            Section {
+                Button {
+                    PromptManager.shared.sync()
+                } label: {
+                    Text("Sync Prompts")
+                }
+                .padding(.top)
+                .disabled(PromptManager.shared.isSyncing)
+            } footer: {
+                Text(PromptManager.shared.lastSyncAt.dateDesc)
+            }
+#endif
         }
         .onAppear() {
             self.selectedGroup = configuration.model.group
