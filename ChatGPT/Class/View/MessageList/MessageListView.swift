@@ -18,8 +18,22 @@ struct MessageListView: View {
     
     @State var isShowSettingsView = false
     
+    @State var isShowClearMessagesAlert = false
+    
     var body: some View {
         contentView
+            .alert(
+                "Warning",
+                isPresented: $isShowClearMessagesAlert
+            ) {
+                Button(role: .destructive) {
+                    session.clearMessages()
+                } label: {
+                    Text("Confirm")
+                }
+            } message: {
+                Text("Remove all messages?")
+            }
 #if os(iOS)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -42,7 +56,7 @@ struct MessageListView: View {
                 ToolbarItem(placement: .automatic) {
                     Button {
                         guard !session.isReplying else { return }
-                        session.clearMessages()
+                        isShowClearMessagesAlert = true
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -54,7 +68,7 @@ struct MessageListView: View {
                 ToolbarItem(placement: .automatic) {
                     Button {
                         guard !session.isReplying else { return }
-                        session.clearMessages()
+                        isShowClearMessagesAlert = true
                     } label: {
                         Image(systemName: "trash")
                     }

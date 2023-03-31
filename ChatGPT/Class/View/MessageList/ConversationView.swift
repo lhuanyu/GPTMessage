@@ -205,7 +205,7 @@ struct ConversationView: View {
                         .textSelection(.enabled)
                 }
             } else if !text.isEmpty {
-                if AppConfiguration.shared.isMarkdownEnabled {
+                if AppConfiguration.shared.isMarkdownEnabled && !conversation.isReplying {
                     MessageMarkdownView(text: text)
                         .textSelection(.enabled)
                 } else {

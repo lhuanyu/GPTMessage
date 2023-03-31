@@ -163,7 +163,7 @@ struct AppSettingsView: View {
                 NavigationLink {
                     CustomPromptsView()
                 } label: {
-                    Text("Custome Prompts")
+                    Text("Custom Prompts")
                 }
             }
 #else
