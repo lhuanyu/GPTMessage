@@ -9,9 +9,20 @@ import SwiftUI
 
 struct DialogueSessionListView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    
+#if os(iOS)
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
+    private var shouldShowIcon: Bool {
+        verticalSizeClass != .compact
+    }
+#endif
+
 
     @Binding var dialogueSessions: [DialogueSession]
     @Binding var selectedDialogueSession: DialogueSession?
+    
+    @Binding var isReplying: Bool
     
     var deleteHandler: (IndexSet) -> Void
     var deleteDialogueHandler: (DialogueSession) -> Void
@@ -21,11 +32,13 @@ struct DialogueSessionListView: View {
             ForEach(dialogueSessions) { session in
 #if os(iOS)
                 HStack {
-                    Image("openai")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .cornerRadius(20)
-                        .padding()
+                    if shouldShowIcon {
+                        Image("openai")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .cornerRadius(20)
+                            .padding()
+                    }
                     VStack(spacing: 4) {
                         NavigationLink(value: session) {
                             HStack {
@@ -118,26 +131,31 @@ struct DialogueSessionListView: View {
                 deleteHandler(indexSet)
             }
         }
-        .onAppear(perform: updateList)
+        .onAppear(perform: sortList)
 #if os(iOS)
         .listStyle(.plain)
         .navigationTitle(Text("ChatGPT"))
 #else
         .frame(minWidth: 300)
-        .onChange(of: selectedDialogueSession) { _ in
-            if selectedDialogueSession != nil {
-                let session = selectedDialogueSession
-                updateList()
-                selectedDialogueSession = session
-            } else {
-                updateList()
-            }
-        }
 #endif
-        
+        .onChange(of: isReplying) { isReplying in
+            updateList()
+        }
     }
     
     private func updateList() {
+        withAnimation {
+            if selectedDialogueSession != nil {
+                let session = selectedDialogueSession
+                sortList()
+                selectedDialogueSession = session
+            } else {
+                sortList()
+            }
+        }
+    }
+    
+    private func sortList() {
         dialogueSessions = dialogueSessions.sorted(by: {
             $0.date > $1.date
         })

@@ -40,7 +40,9 @@ struct PromptsListView: View {
             }
 
             Section {
-                ForEach(manager.syncedPrompts) { prompt in
+                ForEach(manager.syncedPrompts.sorted(by: {
+                    $0.act < $1.act
+                })) { prompt in
                     NavigationLink {
                         PromptDetailView(prompt: prompt)
                     } label: {

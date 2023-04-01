@@ -21,9 +21,13 @@ struct ContentView: View {
     @State var selectedDialogueSession: DialogueSession?
     
     @State var isShowSettingView = false
+    
+    @State var isReplying = false
+    
+    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             contentView()
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
@@ -45,6 +49,15 @@ struct ContentView: View {
             ZStack {
                 if let selectedDialogueSession = selectedDialogueSession {
                     MessageListView(session:selectedDialogueSession)
+                        .onReceive(selectedDialogueSession.$isReplying.didSet) { isReplying in
+                            self.isReplying = isReplying
+                        }
+                        .onReceive(selectedDialogueSession.$conversations.didSet) { conversations in
+                            if conversations.isEmpty {
+                                isReplying = true
+                                isReplying = false
+                            }
+                        }
                 }
             }
 #if os(iOS)
@@ -54,6 +67,7 @@ struct ContentView: View {
             .frame(minWidth: 500)
 #endif
         }
+        .navigationSplitViewStyle(.balanced)
 #if os(macOS)
         .frame(minWidth: 800, minHeight: 500)
         .background(.secondarySystemBackground)
@@ -78,11 +92,13 @@ struct ContentView: View {
         } else {
             DialogueSessionListView(
                 dialogueSessions: $dialogueSessions,
-                selectedDialogueSession: $selectedDialogueSession) {
-                    deleteItems(offsets: $0)
-                } deleteDialogueHandler: {
-                    deleteItem($0)
-                }
+                selectedDialogueSession: $selectedDialogueSession,
+                isReplying: $isReplying
+            ) {
+                deleteItems(offsets: $0)
+            } deleteDialogueHandler: {
+                deleteItem($0)
+            }
         }
     }
     

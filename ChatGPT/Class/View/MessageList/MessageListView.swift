@@ -50,7 +50,20 @@ struct MessageListView: View {
                         }
                     }
                     .sheet(isPresented: $isShowSettingsView) {
-                        DialogueSettingsView(configuration: $session.configuration)
+                        NavigationStack {
+                            DialogueSettingsView(configuration: $session.configuration)
+                                .navigationBarTitleDisplayMode(.inline)
+                                .toolbar {
+                                    ToolbarItem {
+                                        Button {
+                                            isShowSettingsView = false
+                                        } label: {
+                                            Text("Done")
+                                                .bold()
+                                        }
+                                    }
+                                }
+                        }
                     }
                 }
                 ToolbarItem(placement: .automatic) {
@@ -179,6 +192,9 @@ struct MessageListView: View {
             }
 #if os(iOS)
             .onAppear() {
+                scrollToBottom(proxy: proxy)
+            }
+            .onChange(of: session) { _ in
                 scrollToBottom(proxy: proxy)
             }
 #else
