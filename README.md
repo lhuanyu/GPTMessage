@@ -26,9 +26,10 @@ class AppConfiguration: ObservableObject {
 ## Prompts
 
 Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)**.
+
 ### iOS
 
-Click the person icon.
+Click the person icon or type '/'.
 
 ### macOS
 
