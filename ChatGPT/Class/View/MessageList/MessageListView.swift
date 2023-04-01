@@ -252,7 +252,7 @@ struct MessageListView: View {
         }
         Task { @MainActor in
 #if os(macOS)
-            if let selectedPromptIndex = selectedPromptIndex {
+            if let selectedPromptIndex = selectedPromptIndex, selectedPromptIndex < prompts.endIndex {
                 userHasChangedSelection = false
                 session.bubbleText = prompts[selectedPromptIndex].prompt
                 session.input = prompts[selectedPromptIndex].prompt
@@ -305,7 +305,7 @@ struct MessageListView: View {
                     .border(.blue, width: 2)
                     .frame(height: searchListHeight)
                     .onChange(of: selectedPromptIndex) { selectedPromptIndex in
-                        if let selectedPromptIndex = selectedPromptIndex {
+                        if let selectedPromptIndex = selectedPromptIndex, userHasChangedSelection {
                             promptListProxy.scrollTo(selectedPromptIndex, anchor: .bottom)
                         }
                     }
@@ -317,12 +317,6 @@ struct MessageListView: View {
             .padding(.bottom, 50)
             .onAppear() {
                 selectedPromptIndex = 0
-            }
-            .onKeyboardShortcut(.downArrow) {
-                print("down")
-            }
-            .onKeyboardShortcut(.upArrow) {
-                print("up")
             }
         } else {
             EmptyView()
@@ -361,6 +355,8 @@ struct MessageListView: View {
     
     private func filterPrompts() {
         guard session.input.hasPrefix("/") else {
+            selectedPromptIndex = nil
+            userHasChangedSelection = false
             return
         }
         
@@ -383,6 +379,7 @@ struct MessageListView: View {
                 }
             }
         }
+        selectedPromptIndex = 0
     }
     
 #endif
