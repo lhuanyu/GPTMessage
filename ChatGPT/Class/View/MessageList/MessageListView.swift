@@ -132,7 +132,7 @@ struct MessageListView: View {
                                     .id(bottomID)
                             }
                         }
-    #if os(iOS)
+#if os(iOS)
                         .preference(key: HeightPreferenceKey.self, value: geo.frame(in: .global).height)
                         .preference(key: MaxYPreferenceKey.self, value: geo.frame(in: .global).maxY)
                         .onPreferenceChange(HeightPreferenceKey.self) { value in
@@ -162,7 +162,7 @@ struct MessageListView: View {
                         .introspectScrollView(customize: { view in
                             view.clipsToBounds = false
                         })
-    #endif
+#endif
                         .onTapGesture {
                             isTextFieldFocused = false
                         }
@@ -181,9 +181,7 @@ struct MessageListView: View {
                         }
                     }
                 }
-                #if os(macOS)
                 promptListView()
-                #endif
             }
             .onChange(of: session.conversations.last?.errorDesc) { _ in
                 withAnimation {
@@ -191,6 +189,21 @@ struct MessageListView: View {
                 }
             }
 #if os(iOS)
+            .onReceive(keyboardWillChangePublisher) { value in
+                if isTextFieldFocused && value {
+                    self.keyboadWillShow = value
+                }
+            }.onReceive(keyboardDidChangePublisher) { value in
+                if isTextFieldFocused {
+                    if value {
+                        withAnimation(.easeOut(duration: 0.1)) {
+                            scrollToBottom(proxy: proxy)
+                        }
+                    } else {
+                        self.keyboadWillShow = false
+                    }
+                }
+            }
             .onAppear() {
                 scrollToBottom(proxy: proxy)
             }
@@ -212,37 +225,17 @@ struct MessageListView: View {
                 userHasChangedSelection = false
                 scrollToBottom(proxy: proxy)
             }
-            .onChange(of: selectedPromptIndex) { index in
-                guard userHasChangedSelection else {
-                    return
-                }
-                if let index = index, index < prompts.endIndex {
-                    session.input = "/\(prompts[index].cmd)"
-                } else {
-                    session.input = ""
-                }
-            }
+#endif
+            .onChange(of: selectedPromptIndex, perform: onSelectedPromptIndexChange)
             .onChange(of: session.input) { input in
+                #if os(iOS)
+                withAnimation {
+                    filterPrompts()
+                }
+                #else
                 filterPrompts()
+                #endif
             }
-#endif
-#if os(iOS)
-            .onReceive(keyboardWillChangePublisher) { value in
-                if isTextFieldFocused && value {
-                    self.keyboadWillShow = value
-                }
-            }.onReceive(keyboardDidChangePublisher) { value in
-                if isTextFieldFocused {
-                    if value {
-                        withAnimation(.easeOut(duration: 0.1)) {
-                            scrollToBottom(proxy: proxy)
-                        }
-                    } else {
-                        self.keyboadWillShow = false
-                    }
-                }
-            }
-#endif
         }
     }
     
@@ -251,7 +244,6 @@ struct MessageListView: View {
             return
         }
         Task { @MainActor in
-#if os(macOS)
             if let selectedPromptIndex = selectedPromptIndex, selectedPromptIndex < prompts.endIndex {
                 userHasChangedSelection = false
                 session.bubbleText = prompts[selectedPromptIndex].prompt
@@ -260,9 +252,6 @@ struct MessageListView: View {
             } else {
                 session.bubbleText = session.input
             }
-#else
-            session.bubbleText = session.input
-#endif
             session.isSending = true
             await session.send() {
                 scrollToBottom(proxy: proxy, anchor: $0)
@@ -275,9 +264,15 @@ struct MessageListView: View {
     }
     
     
-#if os(macOS)
     
     //MARK: - Search Prompt
+    
+#if os(iOS)
+    
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
+#endif
     
     @ViewBuilder
     private func promptListView() -> some View {
@@ -286,53 +281,108 @@ struct MessageListView: View {
                 Spacer()
                 ScrollViewReader { promptListProxy in
                     List(selection: $selectedPromptIndex) {
-                        ForEach(prompts.indices, id: \.self) { index in
-                            let prompt = prompts[index]
-                            HStack {
-                                Text("/\(prompt.cmd)")
-                                    .lineLimit(1)
-                                    .bold()
-                                Spacer()
-                                Text(prompt.act)
-                                    .lineLimit(1)
-                                    .foregroundColor(.secondaryLabel)
+                        if prompts.isEmpty {
+                            Text("No Result")
+                                .foregroundColor(.secondaryLabel)
+                        } else {
+                            ForEach(prompts.indices, id: \.self) { index in
+                                let prompt = prompts[index]
+                                HStack {
+                                    Text("/\(prompt.cmd)")
+                                        .lineLimit(1)
+                                        .bold()
+#if os(macOS)
+                                    Spacer()
+                                    Text(prompt.act)
+                                        .lineLimit(1)
+                                        .foregroundColor(.secondaryLabel)
+#else
+                                    if horizontalSizeClass == .regular {
+                                        Spacer()
+                                        Text(prompt.act)
+                                            .lineLimit(1)
+                                            .foregroundColor(.secondaryLabel)
+                                    }
+#endif
+                                }
+                                .id(index)
+                                .tag(index)
+#if os(macOS)
+                                .toolTip(prompt.prompt)
+#endif
                             }
-                            .id(index)
-                            .tag(index)
-                            .toolTip(prompt.prompt)
                         }
                     }
+                    .listStyle(.plain)
+                    .background(Color.systemBackground)
                     .border(.blue, width: 2)
-                    .frame(height: searchListHeight)
+                    .frame(height: promptListHeight)
+#if os(macOS)
                     .onChange(of: selectedPromptIndex) { selectedPromptIndex in
                         if let selectedPromptIndex = selectedPromptIndex, userHasChangedSelection {
                             promptListProxy.scrollTo(selectedPromptIndex, anchor: .bottom)
                         }
                     }
+#endif
                 }
             }
-            .frame(minWidth: 400, maxHeight: .infinity)
-            .padding(.leading, 62)
-            .padding(.trailing, 40)
+            .frame(minWidth: promptListMinWidth, maxHeight: .infinity)
+            .padding(.leading, promptListLeadingPadding)
+            .padding(.trailing, promptListTrailingPadding)
             .padding(.bottom, 50)
+#if os(macOS)
             .onAppear() {
                 selectedPromptIndex = 0
             }
+#endif
         } else {
             EmptyView()
         }
     }
-
-        
+    
+    private var promptListTrailingPadding: CGFloat {
+#if os(macOS)
+        40
+#else
+        16
+#endif
+    }
+    
+    private var promptListLeadingPadding: CGFloat {
+#if os(macOS)
+        62
+#else
+        horizontalSizeClass == .regular ? 110 : 16
+#endif
+    }
+    
+    private var promptListMinWidth: CGFloat {
+#if os(macOS)
+        400
+#else
+        0
+#endif
+    }
+    
+    private var promptListHeight: CGFloat {
+#if os(macOS)
+        min(240, max(CGFloat(prompts.count * 24), 24))
+#else
+        if verticalSizeClass == .compact && isTextFieldFocused {
+            return min(88, max(CGFloat(prompts.count * 44), 44))
+        } else {
+            return min(220, max(CGFloat(prompts.count * 44), 44))
+        }
+#endif
+    }
+    
     @State var selectedPromptIndex: Int?
     
     @State var userHasChangedSelection = false
     
     @State var prompts = PromptManager.shared.prompts
     
-    private var searchListHeight: CGFloat {
-        min(300, max(CGFloat(prompts.count * 24) + 20, 44))
-    }
+#if os(macOS)
     
     @State private var monitor: Any?
     
@@ -353,6 +403,8 @@ struct MessageListView: View {
         }
     }
     
+#endif
+    
     private func filterPrompts() {
         guard session.input.hasPrefix("/") else {
             selectedPromptIndex = nil
@@ -371,18 +423,33 @@ struct MessageListView: View {
             prompts = PromptManager.shared.prompts
         } else {
             let input = session.input.dropFirst()
-            prompts = PromptManager.shared.prompts.filter {
-                if $0.cmd.range(of: input) != nil {
-                    return true
-                } else {
-                    return false
-                }
+            prompts = PromptManager.shared.prompts.filter { prompt in
+                let p = prompt.cmd.lowercased().replacingOccurrences(of: "_", with: "")
+                return p.range(of:input.lowercased()) != nil || prompt.cmd.lowercased().range(of: input.lowercased()) != nil
             }
         }
+#if os(macOS)
         selectedPromptIndex = 0
+#endif
     }
     
+    private func onSelectedPromptIndexChange(_ index: Int?) {
+#if os(macOS)
+        guard userHasChangedSelection else {
+            return
+        }
+        if let index = index, index < prompts.endIndex {
+            session.input = "/\(prompts[index].cmd)"
+        } else {
+            session.input = ""
+        }
+#else
+        if let index = index, index < prompts.endIndex {
+            session.input = prompts[index].prompt
+        }
 #endif
+    }
+    
     
 }
 

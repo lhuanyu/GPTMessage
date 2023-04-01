@@ -241,6 +241,7 @@ extension String {
 #if os(iOS)
         UIPasteboard.general.string = self
 #else
+        NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(self, forType: .string)
 #endif
     }

@@ -34,7 +34,7 @@ struct ComposerInputView: View {
     
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
-            TextField("Ask anything", text: $input, axis: .vertical)
+            TextField("Ask anything, or type /", text: $input, axis: .vertical)
                 .focused($isTextFieldFocused)
                 .multilineTextAlignment(.leading)
                 .lineLimit(1...20)
