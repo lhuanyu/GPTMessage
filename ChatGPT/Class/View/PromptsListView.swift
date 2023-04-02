@@ -10,33 +10,28 @@ import SwiftUI
 struct PromptsListView: View {
     
     @ObservedObject var manager = PromptManager.shared
-            
+                
     var body: some View {
         List {
-            if manager.isSyncing {
-                Section(header: "", footer: "Updating...") {
-                    Button {
-
-                    } label: {
-                        HStack {
-                            Text("Sync")
+            Section(header: "", footer: manager.isSyncing ? "Updating..." : manager.lastSyncAt.dateDesc) {
+                HStack {
+                    Text("Source")
+                    TextField("", text: manager.$promptSource)
+                        .truncationMode(.middle)
+                        .foregroundColor(Color.secondaryLabel)
+                }
+                Button {
+                    manager.sync()
+                } label: {
+                    HStack {
+                        Text("Sync")
+                        if manager.isSyncing {
                             Spacer()
                             ProgressView()
                         }
                     }
-                    .disabled(manager.isSyncing)
                 }
-            } else {
-                Section(header: "", footer: manager.lastSyncAt.dateDesc) {
-                    Button {
-                        manager.sync()
-                    } label: {
-                        HStack {
-                            Text("Sync")
-                        }
-                    }
-                    .disabled(manager.isSyncing)
-                }
+                .disabled(manager.isSyncing)
             }
 
             Section {

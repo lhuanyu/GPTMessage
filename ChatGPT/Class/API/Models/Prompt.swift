@@ -103,8 +103,10 @@ class PromptManager: ObservableObject {
     
     @Published private(set) var isSyncing: Bool = false
     
+    @AppStorage("promptSource") var promptSource: String = "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv"
+    
     func sync() {
-        guard let url = URL(string: "https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv") else {
+        guard let url = URL(string: promptSource) else {
             return
         }
         let request = URLRequest(url: url)

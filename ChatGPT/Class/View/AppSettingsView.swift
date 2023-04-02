@@ -150,6 +150,7 @@ struct AppSettingsView: View {
                     Image(systemName: "key")
                     Spacer()
                     TextField("", text: $configuration.key)
+                        .truncationMode(.middle)
                 }
             }
             
