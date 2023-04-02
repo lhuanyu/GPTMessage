@@ -104,6 +104,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             }
         }
     }
+    @Published var suggestions: [String] = []
     @Published var date = Date()
     
     private var initFinished = false
@@ -170,6 +171,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         }
         
         withAnimation {
+            suggestions.removeAll()
             isReplying = true
             lastConversationData = appendConversation(conversation)
             scroll?(.bottom)
@@ -190,13 +192,18 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
                 streamText += text
                 conversation.reply = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
                 conversations[conversations.count - 1] = conversation
+#if os(iOS)
                 withAnimation {
-                    scroll?(.top)
+                    scroll?(.top)///for an issue of iOS 16
                     scroll?(.bottom)
                 }
+#else
+                scroll?(.bottom)/// withAnimation may cause scrollview jitter in macOS
+#endif
             }
             lastConversationData?.sync(with: conversation)
             isStreaming = false
+            createSuggestions(scroll: scroll)
         } catch {
             withAnimation {
                 conversation.errorDesc = error.localizedDescription
@@ -211,6 +218,26 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             isReplying = false
             scroll?(.bottom)
             save()
+        }
+    }
+    
+    func createSuggestions(scroll: ((UnitPoint) -> Void)? = nil) {
+        Task { @MainActor in
+            do {
+                let suggestions = try await service.createSuggestions()
+                print(suggestions)
+#if os(iOS)
+                withAnimation {
+                    self.suggestions = suggestions
+                    scroll?(.bottom)
+                }
+#else
+                self.suggestions = suggestions
+                scroll?(.bottom)
+#endif
+            } catch let error {
+                print(error)
+            }
         }
     }
 
@@ -290,7 +317,12 @@ extension DialogueSession {
     }
     
     func removeConversation(at index: Int) {
+        let isLast = conversations.endIndex-1 == index
         let conversation = conversations.remove(at: index)
+        if isLast && !conversations.isEmpty {
+            conversations[conversations.endIndex-1].isLast = true
+            suggestions.removeAll()
+        }
         do {
             if let conversationsSet = rawData?.conversations as? Set<ConversationData>,
                let conversationData = conversationsSet.first(where: {

@@ -77,6 +77,48 @@ class OpenAIService: @unchecked Sendable {
         try await sendMessage("Summarize our conversation, give me a title as short as possible in the language of your last response. Return the title only.", appendNewMessage: false)
     }
     
+    private var suggestionsCount: Int {
+#if os(iOS)
+        return 3
+#else
+        return 5
+#endif
+    }
+    
+    func createSuggestions() async throws -> [String]  {
+        
+        var prompt = "Give me \(suggestionsCount) reply suggestions which I may use to ask you based on your last reply. Each suggestion must be in a []. Suggestions must be concise and informative, less than 6 words. If your last reply is in Chinese,your must give me Chinese suggestions."
+        if messages.isEmpty {
+            prompt = "Give me \(suggestionsCount) prompts which I can use to chat with you based on your capabilities as an AI language model. Each prompt must be in a []. Prompts should be concise and creative, between 5 and 20 words.  It must not contain these topic: weather, what's you favorite, any other personal questions."
+        }
+        
+        let jsonString = try await sendMessage(prompt, appendNewMessage: false)
+
+        print(jsonString)
+
+        var result = [String]()
+        let pattern = "\\[(.*?)\\]"
+
+        do {
+            let regex = try NSRegularExpression(pattern: pattern)
+            let nsText = jsonString as NSString
+            let matches = regex.matches(in: jsonString, range: NSRange(location: 0, length: nsText.length))
+            
+            for match in matches {
+                let range = match.range(at: 1)
+                let content = nsText.substring(with: range)
+                if !result.contains(content) {
+                    result.append(content)
+                }
+            }
+        } catch {
+            print("Error creating regex: \(error.localizedDescription)")
+        }
+
+        
+        return result
+    }
+    
     private func makeJSONBody(with input: String, stream: Bool = true) throws -> Data {
         switch configuration.mode {
         case .chat:

@@ -126,11 +126,27 @@ struct MessageListView: View {
                                     }
                                     .id(index)
                                 }
-                                Text("")
-                                    .frame(height: 5)
-                                    .frame(maxWidth: .infinity)
-                                    .id(bottomID)
+                                Spacer(minLength: 0)
+                                ScrollView(.horizontal) {
+                                    HStack {
+                                        ForEach(session.suggestions, id: \.self) { suggestion in
+                                            Button {
+                                                selectedPromptIndex = nil
+                                                session.input = suggestion
+                                                sendMessage(proxy)
+                                            } label: {
+                                                Text(suggestion)
+                                                    .lineLimit(1)
+                                            }
+                                            .padding()
+                                        }
+                                    }
+                                }
+                                .scrollIndicators(.never)
+                                .frame(maxWidth: .infinity)
+                                .id(bottomID)
                             }
+                            .frame(minHeight: geo.size.height)
                         }
 #if os(iOS)
                         .preference(key: HeightPreferenceKey.self, value: geo.frame(in: .global).height)
@@ -206,24 +222,44 @@ struct MessageListView: View {
             }
             .onAppear() {
                 scrollToBottom(proxy: proxy)
+                if session.suggestions.isEmpty {
+                    session.createSuggestions() {
+                        scrollToBottom(proxy: proxy, anchor: $0)
+                    }
+                }
             }
-            .onChange(of: session) { _ in
+            .onChange(of: session) { session in
                 scrollToBottom(proxy: proxy)
+                if session.suggestions.isEmpty {
+                    session.createSuggestions() {
+                        scrollToBottom(proxy: proxy, anchor: $0)
+                    }
+                }
             }
 #else
             .onAppear() {
                 scrollToBottom(proxy: proxy)
                 addKeyboardEventMonitorForPromptSearching()
+                if session.suggestions.isEmpty {
+                    session.createSuggestions() {
+                        scrollToBottom(proxy: proxy, anchor: $0)
+                    }
+                }
             }
             .onDisappear() {
                 if let monitor = monitor {
                     NSEvent.removeMonitor(monitor)
                 }
             }
-            .onChange(of: session) { _ in
+            .onChange(of: session) { session in
                 selectedPromptIndex = nil
                 userHasChangedSelection = false
                 scrollToBottom(proxy: proxy)
+                if session.suggestions.isEmpty {
+                    session.createSuggestions() {
+                        scrollToBottom(proxy: proxy, anchor: $0)
+                    }
+                }
             }
 #endif
             .onChange(of: selectedPromptIndex, perform: onSelectedPromptIndexChange)
