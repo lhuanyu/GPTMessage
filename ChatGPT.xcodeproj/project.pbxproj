@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E4994DEB29D6E655002981D0 /* CustomPromptsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */; };
+		E4994DED29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */; };
+		E4994DF229DA8B29002981D0 /* MacOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */; };
 		E4C65EA229CA9E7E00AFA884 /* ChatGPTApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EA129CA9E7E00AFA884 /* ChatGPTApp.swift */; };
 		E4C65EA429CA9E7E00AFA884 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EA329CA9E7E00AFA884 /* Persistence.swift */; };
 		E4C65EA729CA9E7E00AFA884 /* ChatGPT.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EA529CA9E7E00AFA884 /* ChatGPT.xcdatamodeld */; };
@@ -67,6 +69,8 @@
 
 /* Begin PBXFileReference section */
 		E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptsView.swift; sourceTree = "<group>"; };
+		E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewDidScrollViewModifier.swift; sourceTree = "<group>"; };
+		E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSSettingsView.swift; sourceTree = "<group>"; };
 		E4C65E9E29CA9E7E00AFA884 /* ChatGPT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatGPT.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C65EA129CA9E7E00AFA884 /* ChatGPTApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatGPTApp.swift; sourceTree = "<group>"; };
 		E4C65EA329CA9E7E00AFA884 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -136,6 +140,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E4994DF029DA8AF8002981D0 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */,
+				E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */,
+				E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */,
+				E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
 		E4C65E9529CA9E7E00AFA884 = {
 			isa = PBXGroup;
 			children = (
@@ -219,9 +234,7 @@
 		E4C65ED529CA9F7800AFA884 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */,
-				E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */,
-				E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */,
+				E4994DF029DA8AF8002981D0 /* Setting */,
 				E4C65EDF29CA9F7800AFA884 /* DialogueList */,
 				E4C65ED629CA9F7800AFA884 /* MessageList */,
 				E4C65F1629CB450900AFA884 /* UI */,
@@ -285,6 +298,7 @@
 				E4C65EEB29CA9F7800AFA884 /* Splash.swift */,
 				E4C65EEC29CA9F7800AFA884 /* KeyboardPublisher.swift */,
 				E4C65F1B29D0404B00AFA884 /* DateExtensions.swift */,
+				E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -456,11 +470,13 @@
 				E4C65F1C29D0404C00AFA884 /* DateExtensions.swift in Sources */,
 				E4E99BC729D415FF00C0FCBD /* DialogueListPlaceholderView.swift in Sources */,
 				E4C65EA229CA9E7E00AFA884 /* ChatGPTApp.swift in Sources */,
+				E4994DF229DA8B29002981D0 /* MacOSSettingsView.swift in Sources */,
 				E4C65EEF29CA9F7800AFA884 /* MessageListView.swift in Sources */,
 				E4C65F2029D0649800AFA884 /* DialogueSettingsView.swift in Sources */,
 				E4994DEB29D6E655002981D0 /* CustomPromptsView.swift in Sources */,
 				E4C65EA729CA9E7E00AFA884 /* ChatGPT.xcdatamodeld in Sources */,
 				E4C65EEE29CA9F7800AFA884 /* Conversation.swift in Sources */,
+				E4994DED29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift in Sources */,
 				E4C65EFB29CA9F7800AFA884 /* Prompt.swift in Sources */,
 				E4C65EA929CA9E7E00AFA884 /* ContentView.swift in Sources */,
 				E4C65F1829CBEE2400AFA884 /* BottomInputView.swift in Sources */,

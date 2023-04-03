@@ -106,24 +106,19 @@ struct AppSettingsView: View {
             }
             Section(header: "Model") {
                 HStack {
-#if os(iOS)
                     Text("Model")
                         .fixedSize()
                     Spacer()
-#endif
                     Picker("Model", selection: $selectedModel) {
                         ForEach(models, id: \.self) { model in
                             Text(model.rawValue)
                                 .tag(model)
                         }
                     }
-#if os(iOS)
                     .labelsHidden()
-#endif
                     .onChange(of: selectedModel, perform: updateModes(_:))
                 }
                 VStack {
-#if os(iOS)
                     Stepper(value: $configuration.temperature, in: 0...1, step: 0.1) {
                         HStack {
                             Text("Temperature")
@@ -136,15 +131,6 @@ struct AppSettingsView: View {
                                 .cornerRadius(8)
                         }
                     }
-#else
-                    Slider(value: $configuration.temperature) {
-                        Text("Temperature")
-                    } minimumValueLabel: {
-                        Text("0")
-                    } maximumValueLabel: {
-                        Text("1")
-                    }
-#endif
                 }
                 HStack {
                     Image(systemName: "key")
@@ -153,8 +139,6 @@ struct AppSettingsView: View {
                         .truncationMode(.middle)
                 }
             }
-            
-#if os(iOS)
             Section("Prompt") {
                 NavigationLink {
                     PromptsListView()
@@ -167,19 +151,6 @@ struct AppSettingsView: View {
                     Text("Custom Prompts")
                 }
             }
-#else
-            Section {
-                Button {
-                    PromptManager.shared.sync()
-                } label: {
-                    Text("Sync Prompts")
-                }
-                .padding(.top)
-                .disabled(PromptManager.shared.isSyncing)
-            } footer: {
-                Text(PromptManager.shared.lastSyncAt.dateDesc)
-            }
-#endif
         }
         .onAppear() {
             self.selectedGroup = configuration.model.group
@@ -187,16 +158,6 @@ struct AppSettingsView: View {
             self.selectedMode = configuration.mode
         }
         .navigationTitle("Settings")
-#if os(macOS)
-        .frame(width: 400)
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button("Close") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-            }
-        }
-#endif
     }
     
     

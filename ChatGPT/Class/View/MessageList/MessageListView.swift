@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftUIX
 import Introspect
-import RegexBuilder
 
 struct MessageListView: View {
     

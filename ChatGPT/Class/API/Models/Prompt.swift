@@ -56,7 +56,14 @@ class PromptManager: ObservableObject {
     }
     
     func removeCustomPrompts(atOffsets indexSet: IndexSet) {
-        customPrompts.remove(atOffsets: indexSet)
+
+        saveCustomPrompts()
+    }
+    
+    func removeCustomPrompt(_ prompt: Prompt) {
+        customPrompts.removeAll {
+            $0 == prompt
+        }
         saveCustomPrompts()
     }
     

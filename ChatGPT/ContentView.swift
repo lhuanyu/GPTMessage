@@ -30,6 +30,7 @@ struct ContentView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             contentView()
                 .toolbar {
+#if os(iOS)
                     ToolbarItem(placement: .automatic) {
                         Button {
                             isShowSettingView = true
@@ -37,6 +38,7 @@ struct ContentView: View {
                             Image(systemName: "ellipsis.circle")
                         }
                     }
+#endif
                     ToolbarItem(placement: .automatic) {
                         Button {
                             addItem()
@@ -71,10 +73,24 @@ struct ContentView: View {
 #if os(macOS)
         .frame(minWidth: 800, minHeight: 500)
         .background(.secondarySystemBackground)
-#endif
+#else
         .sheet(isPresented: $isShowSettingView) {
-            settingView()
+            NavigationStack {
+                AppSettingsView(configuration: configuration)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem {
+                            Button {
+                                isShowSettingView = false
+                            } label: {
+                                Text("Done")
+                                    .bold()
+                            }
+                        }
+                    }
+            }
         }
+#endif
         .onAppear() {
             dialogueSessions = items.compactMap {
                 DialogueSession(rawData: $0)
@@ -100,30 +116,6 @@ struct ContentView: View {
                 deleteItem($0)
             }
         }
-    }
-    
-    @ViewBuilder
-    private func settingView() -> some View {
-#if os(macOS)
-        AppSettingsView(configuration: configuration)
-            .padding()
-            .fixedSize()
-#else
-        NavigationStack {
-            AppSettingsView(configuration: configuration)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem {
-                        Button {
-                            isShowSettingView = false
-                        } label: {
-                            Text("Done")
-                                .bold()
-                        }
-                    }
-                }
-        }
-#endif
     }
 
 

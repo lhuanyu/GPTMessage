@@ -145,6 +145,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         title = "Empty"
         withAnimation { [weak self] in
             self?.removeAllConversations()
+            self?.suggestions.removeAll()
         }
     }
     

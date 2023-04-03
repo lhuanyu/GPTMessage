@@ -20,5 +20,10 @@ struct ChatGPTApp: App {
                 }
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
+#if os(macOS)
+        Settings {
+            MacOSSettingsView()
+        }
+#endif
     }
 }
