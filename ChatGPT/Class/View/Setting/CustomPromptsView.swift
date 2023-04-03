@@ -170,14 +170,20 @@ struct CustomPromptsView: View {
         #else
         VStack {
             HStack {
-                Text("Name")
-                    .width(60)
+                HStack {
+                    Spacer()
+                    Text("Name:")
+                }
+                .width(60)
                 Spacer()
                 TextField("Type a shortcut name", text: $name)
             }
             HStack(alignment: .top) {
-                Text("Prompt")
-                    .width(60)
+                HStack {
+                    Spacer()
+                    Text("Prompt:")
+                }
+                .width(60)
                 Spacer()
                 TextEditor(text: $prompt)
                     .border(Color.gray.opacity(0.1), width: 1)

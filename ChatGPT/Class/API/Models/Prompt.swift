@@ -19,7 +19,7 @@ import SwiftUI
 //    "enable": true
 //  },
 
-struct Prompt: Codable, Identifiable, Hashable {
+struct Prompt: Codable, Identifiable, Hashable, Equatable {
     var id: String {
         cmd
     }
@@ -27,6 +27,10 @@ struct Prompt: Codable, Identifiable, Hashable {
     let act: String
     let prompt: String
     let tags: [String]
+    
+    static func == (lhs: Prompt, rhs: Prompt) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 class PromptManager: ObservableObject {
@@ -56,7 +60,7 @@ class PromptManager: ObservableObject {
     }
     
     func removeCustomPrompts(atOffsets indexSet: IndexSet) {
-
+        customPrompts.remove(atOffsets: indexSet)
         saveCustomPrompts()
     }
     
@@ -78,6 +82,7 @@ class PromptManager: ObservableObject {
         prompts = (syncedPrompts + customPrompts).sorted(by: {
             $0.act < $1.act
         })
+        prompts.removeDuplicates()
     }
     
     private func jsonData() -> Data? {
@@ -95,6 +100,7 @@ class PromptManager: ObservableObject {
         if let data = jsonData(),
            let prompts = try? JSONDecoder().decode([Prompt].self, from: data) {
             syncedPrompts = prompts
+            syncedPrompts.removeDuplicates()
             print("[Prompt Manager] Load cached prompts. Count: \(syncedPrompts.count).")
         }
     }
@@ -145,6 +151,7 @@ class PromptManager: ObservableObject {
                 }
             })
             syncedPrompts = prompts
+            syncedPrompts.removeDuplicates()
             mergePrompts()
 
             print("[Prompt Manager] Sync completed. Count: \(syncedPrompts.count). Total: \(self.prompts.count).")
@@ -196,4 +203,16 @@ extension URL {
 }
 
 
-
+extension Array where Element: Hashable {
+    @discardableResult
+    mutating func removeDuplicates() -> [Element] {
+        // Thanks to https://github.com/sairamkotha for improving the method
+        self = reduce(into: [Element]()) {
+            if !$0.contains($1) {
+                $0.append($1)
+            }
+        }
+        return self
+    }
+    
+}
