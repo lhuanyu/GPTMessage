@@ -1,0 +1,52 @@
+/* 
+  Localizable.strings
+  ChatGPT
+
+  Created by LuoHuanyu on 2023/4/3.
+  
+*/
+
+"No Message" = "没有信息";
+"Copy" = "复制";
+"Delete" = "删除";
+"Regenerate" = "重新生成";
+
+"Ask anything, or type /" = "问任何问题，或输入/";
+
+"Warning" = "警告";
+"Remove all messages?" = "删除所有信息？";
+"Cancel" = "取消";
+"Confirm" = "确认";
+"Done" = "完成";
+
+"Settings" = "设置";
+
+"Model" = "模型";
+"Prompt" = "提示词";
+"Prompts" = "提示词";
+"Appearance" = "外观";
+
+"Temperature" = "温度";
+"Sync Prompts" = "同步提示词";
+"Source" = "源网址";
+"Sync" = "同步";
+"Never" = "从未更新";
+"Updating" = "更新中";
+"Last updated on %@" = "上次更新于 %@";
+
+"Custom Prompts" = "自定义提示词";
+"Add Prompt" = "新增提示词";
+"No Prompts" = "没有提示词";
+"Name" = "名称";
+"Name:" = "名称:";
+"Prompt:" = "提示词:";
+"Type a shortcut name" = "输入快捷名称";
+"Type a prompt" = "输入提示词内容";
+
+"Markdown Enabled" = "使用Markdown";
+
+
+"OpenAI" = "OpenAI";
+"OpenAI API Key" = "OpenAI API Key";
+"API Key" = "API Key";
+"ChatGPT" = "ChatGPT";

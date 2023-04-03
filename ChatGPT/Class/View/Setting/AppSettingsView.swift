@@ -98,13 +98,13 @@ struct AppSettingsView: View {
     
     var body: some View {
         Form {
-            Section(header: "Display") {
+            Section("Appearance") {
                 HStack {
                     Toggle("Markdown Enabled", isOn: $configuration.isMarkdownEnabled)
                     Spacer()
                 }
             }
-            Section(header: "Model") {
+            Section("Model") {
                 HStack {
                     Text("Model")
                         .fixedSize()
@@ -135,7 +135,7 @@ struct AppSettingsView: View {
                 HStack {
                     Image(systemName: "key")
                     Spacer()
-                    TextField("", text: $configuration.key)
+                    TextField("OpenAI API Key", text: $configuration.key)
                         .truncationMode(.middle)
                 }
             }

@@ -26,7 +26,7 @@ struct MacOSSettingsView: View {
                 }
             
         }
-        .frame(width: 830, height: 430)
+        .frame(minWidth: 700, minHeight: 400)
     }
 }
 
@@ -68,12 +68,14 @@ struct ModelSettingsView: View {
                     )
                 }
             }
+            .listStyle(.sidebar)
         }
-        .listStyle(.sidebar)
     }
 }
 
 struct OpenAISettingsView: View {
+    
+    @StateObject var configuration = AppConfiguration.shared
     
     var body: some View {
         VStack {
@@ -85,7 +87,6 @@ struct OpenAISettingsView: View {
                             .tag(model)
                     }
                 }
-                Spacer()
             }
             .padding(.bottom)
             HStack {
@@ -97,7 +98,9 @@ struct OpenAISettingsView: View {
                 } maximumValueLabel: {
                     Text("1")
                 }
-                Spacer()
+                Text(String(format: "%.2f", configuration.temperature))
+                    .foregroundColor(.blue)
+                    .width(30)
             }
             .padding(.bottom)
             HStack {

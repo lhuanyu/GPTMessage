@@ -163,9 +163,9 @@ extension TimeInterval {
     
     var dateDesc: String {
         if date == .distantPast {
-            return "Never"
+            return String(localized: "Never")
         }
-        return "Last updated on \(date.dateTimeString())"
+        return String(localized: "Last updated on \(date.dateTimeString())")
     }
     
 }
