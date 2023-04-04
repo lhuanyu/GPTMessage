@@ -3,29 +3,19 @@ A SwiftUI app demonstrating ChatGPT and DALL·E with an iMessage-like UI for iOS
 
 This is what the app looks like on iOS:
 <p float="left">
-  <img src="screenshot.PNG" width="350" />
-  <img src="screenshot1.PNG" width="350" /> 
+  <img src="screenshot.jpg" width="350" />
+  <img src="screenshot1.jpg" width="350" /> 
 </p>
 
 And macOS:
 <p float="left">
-  <img src="screenshot_macOS.png" width="900"/>
+  <img src="screenshot_macOS.jpg" width="900"/>
 </p>
 
-## Usage
+## Feautures
+### Chat Completion
 
-Set your OpenAI API key in the AppConfiguration.
-
-```swift
-class AppConfiguration: ObservableObject {
-        
-    @AppStorage("configuration.key") var key = "OpenAI API Key"
-    
-}
-```
-### Chat
-
-Chat is driven by OpenAI's chat language models, including gpt-3.5-turbo and gpt-3.5-turbo-0301.
+Chat Completion is driven by OpenAI's chat language models, including gpt-3.5-turbo and gpt-3.5-turbo-0301.
 ### Image Generation
 
 Image Generation uses OpenAI's image generation API(DALL·E) to create images.
@@ -38,8 +28,20 @@ Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/aweso
 
 ### iOS
 
-Click the person icon or type '/'.
+Click the person icon or type '/' to show the prompts list.
 
 ### macOS
 
 Type '/' to show the prompts list.
+
+## Usage
+
+Set your OpenAI API key in the AppConfiguration.
+
+```swift
+class AppConfiguration: ObservableObject {
+        
+    @AppStorage("configuration.key") var key = "OpenAI API Key"
+    
+}
+```
