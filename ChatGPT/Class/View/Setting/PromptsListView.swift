@@ -19,6 +19,7 @@ struct PromptsListView: View {
             HStack {
                 Text("Source")
                 TextField("", text: manager.$promptSource)
+                    .textFieldStyle(.roundedBorder)
                     .truncationMode(.middle)
                 Button {
                     manager.sync()

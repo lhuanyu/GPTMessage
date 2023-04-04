@@ -177,6 +177,7 @@ struct CustomPromptsView: View {
                 .width(60)
                 Spacer()
                 TextField("Type a shortcut name", text: $name)
+                    .textFieldStyle(.roundedBorder)
             }
             HStack(alignment: .top) {
                 HStack {

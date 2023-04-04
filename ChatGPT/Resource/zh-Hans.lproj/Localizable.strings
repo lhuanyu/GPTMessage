@@ -48,5 +48,7 @@
 
 "OpenAI" = "OpenAI";
 "OpenAI API Key" = "OpenAI API Key";
+"OpenAI Documentation" = "OpenAI 文档";
 "API Key" = "API Key";
 "ChatGPT" = "ChatGPT";
+"Language Model" = "语言模型";

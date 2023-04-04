@@ -29,7 +29,7 @@ struct DialogueSettingsView: View {
                     .labelsHidden()
                 }
                 VStack {
-                    Stepper(value: $configuration.temperature, in: 0...1, step: 0.1) {
+                    Stepper(value: $configuration.temperature, in: 0...2, step: 0.1) {
                         HStack {
                             Text("Temperature")
                             Spacer()

@@ -77,38 +77,66 @@ struct OpenAISettingsView: View {
     
     @StateObject var configuration = AppConfiguration.shared
     
+    @State private var showAPIKey = false
+    
     var body: some View {
-        VStack {
-            HStack {
-                Spacer()
-                Picker("Model", selection: AppConfiguration.shared.$model) {
-                    ForEach(OpenAIModelType.chatModels, id: \.self) { model in
-                        Text(model.rawValue)
-                            .tag(model)
+        VStack(alignment: .leading) {
+            Text("Language Model")
+                .bold()
+            GroupBox {
+                HStack {
+                    Picker("Model", selection: AppConfiguration.shared.$model) {
+                        ForEach(OpenAIModelType.chatModels, id: \.self) { model in
+                            Text(model.rawValue)
+                                .tag(model)
+                        }
                     }
                 }
-            }
-            .padding(.bottom)
-            HStack {
-                Spacer()
-                Slider(value: AppConfiguration.shared.$temperature, in: 0...1) {
-                    Text("Temperature")
-                } minimumValueLabel: {
-                    Text("0")
-                } maximumValueLabel: {
-                    Text("1")
+                .padding()
+                Divider()
+                VStack {
+                    HStack {
+                        Slider(value: AppConfiguration.shared.$temperature, in: 0...2) {
+                            Text("Temperature")
+                        } minimumValueLabel: {
+                            Text("0")
+                        } maximumValueLabel: {
+                            Text("1")
+                        }
+                        Text(String(format: "%.2f", configuration.temperature))
+                            .width(30)
+                    }
                 }
-                Text(String(format: "%.2f", configuration.temperature))
-                    .foregroundColor(.blue)
-                    .width(30)
+                .padding()
             }
             .padding(.bottom)
+            GroupBox {
+                HStack {
+                    Image(systemName: "key")
+                    if showAPIKey  {
+                        TextField("", text: AppConfiguration.shared.$key)
+                            .textFieldStyle(.roundedBorder)
+                    } else {
+                        SecureField("", text: AppConfiguration.shared.$key)
+                            .textFieldStyle(.roundedBorder)
+                    }
+                    Button {
+                        showAPIKey.toggle()
+                    } label: {
+                        if showAPIKey {
+                            Image(systemName: "eye.slash")
+                        } else {
+                            Image(systemName: "eye")
+                        }
+                    }
+                    .buttonStyle(.borderless)
+
+                }
+                .padding()
+            }
             HStack {
                 Spacer()
-                Image(systemName: "key")
-                TextField("", text: AppConfiguration.shared.$key)
-                    .truncationMode(.middle)
-                Spacer()
+                Link("OpenAI Documentation", destination: URL(string: "https://platform.openai.com/docs/introduction")!)
             }
             Spacer()
         }

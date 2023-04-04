@@ -96,6 +96,8 @@ struct AppSettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismiss
     
+    @State var showAPIKey = false
+    
     var body: some View {
         Form {
             Section("Appearance") {
@@ -104,7 +106,7 @@ struct AppSettingsView: View {
                     Spacer()
                 }
             }
-            Section("Model") {
+            Section("OpenAI") {
                 HStack {
                     Text("Model")
                         .fixedSize()
@@ -119,7 +121,7 @@ struct AppSettingsView: View {
                     .onChange(of: selectedModel, perform: updateModes(_:))
                 }
                 VStack {
-                    Stepper(value: $configuration.temperature, in: 0...1, step: 0.1) {
+                    Stepper(value: $configuration.temperature, in: 0...2, step: 0.1) {
                         HStack {
                             Text("Temperature")
                             Spacer()
@@ -135,8 +137,22 @@ struct AppSettingsView: View {
                 HStack {
                     Image(systemName: "key")
                     Spacer()
-                    TextField("OpenAI API Key", text: $configuration.key)
-                        .truncationMode(.middle)
+                    if showAPIKey {
+                        TextField("OpenAI API Key", text: $configuration.key)
+                            .truncationMode(.middle)
+                    } else {
+                        SecureField("OpenAI API Key", text: $configuration.key)
+                            .truncationMode(.middle)
+                    }
+                    Button {
+                        showAPIKey.toggle()
+                    } label: {
+                        if showAPIKey {
+                            Image(systemName: "eye.slash")
+                        } else {
+                            Image(systemName: "eye")
+                        }
+                    }
                 }
             }
             Section("Prompt") {
