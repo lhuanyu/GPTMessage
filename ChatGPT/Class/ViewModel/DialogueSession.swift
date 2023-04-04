@@ -118,7 +118,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     }
         
     var lastMessage: String {
-        if let response = conversations.last?.reply, !response.isEmpty {
+        if let response = conversations.last?.replyPreview, !response.isEmpty {
             return response
         }
         return conversations.last?.input ?? ""

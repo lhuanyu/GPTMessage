@@ -25,12 +25,13 @@ class OpenAIService: @unchecked Sendable {
         return session
     }()
     
-    private func makeRequest(with input: String, stream: Bool = false) throws -> URLRequest {
-        let url = URL(string: configuration.mode.baseURL() + configuration.mode.path)!
+    private func makeRequest(with input: String, mode: Mode? = nil, stream: Bool = false) throws -> URLRequest {
+        let mode = mode ?? configuration.mode
+        let url = URL(string: mode.baseURL() + mode.path)!
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = configuration.mode.method
         headers.forEach {  urlRequest.setValue($1, forHTTPHeaderField: $0) }
-        urlRequest.httpBody = try makeJSONBody(with: input, stream: stream)
+        urlRequest.httpBody = try makeJSONBody(with: input, mode: mode, stream: stream)
         return urlRequest
     }
 
@@ -119,8 +120,9 @@ class OpenAIService: @unchecked Sendable {
         return result
     }
     
-    private func makeJSONBody(with input: String, stream: Bool = true) throws -> Data {
-        switch configuration.mode {
+    private func makeJSONBody(with input: String, mode: Mode? = nil, stream: Bool = true) throws -> Data {
+        let mode = mode ?? configuration.mode
+        switch mode {
         case .chat:
             let request = Request(model: configuration.model.rawValue, temperature: configuration.temperature,
                                   messages: trimConversation(with: input), stream: stream)
@@ -131,6 +133,9 @@ class OpenAIService: @unchecked Sendable {
         case .completions:
             let command = Command(prompt: input, model: configuration.model.rawValue, maxTokens: 2048 - input.count, temperature: configuration.temperature, stream: stream)
             return try JSONEncoder().encode(command)
+        case .image:
+            let image = ImageGeneration(prompt: input)
+            return try JSONEncoder().encode(image)
         }
     }
     
@@ -140,6 +145,10 @@ class OpenAIService: @unchecked Sendable {
     }
     
     func sendMessageStream(_ input: String) async throws -> AsyncThrowingStream<String, Error> {
+        if input.isImageGenerationPrompt {
+            return try await createImageStream(input.imagePrompt)
+        }
+        
         let urlRequest = try makeRequest(with: input, stream: true)
         
         let (result, response) = try await urlSession.bytes(for: urlRequest)
@@ -188,6 +197,8 @@ class OpenAIService: @unchecked Sendable {
                                 continuation.yield(text)
                             }
                         }
+                    case .image:
+                        fatalError()
                     }
                     self.appendNewMessage(input: input, reply: reply)
                     continuation.finish()
@@ -231,6 +242,52 @@ class OpenAIService: @unchecked Sendable {
         }
     }
     
+    func createImage(_ prompt: String) async throws -> String {
+        let urlRequest = try makeRequest(with: prompt, mode: .image)
+        
+        let (data, response) = try await urlSession.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw "Invalid response"
+        }
+        
+        guard 200...299 ~= httpResponse.statusCode else {
+            var error = "Response Error: \(httpResponse.statusCode)"
+            if let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
+                error.append("\n\(errorResponse.message)")
+            }
+            throw error
+        }
+        
+        do {
+            let response = try jsonDecoder.decode(ImageGenerationResponse.self, from: data)
+            if let url =  response.data.first?.url {
+                return "![Image](\(url.absoluteString))"
+            } else {
+                throw "Failed to generate image."
+            }
+        } catch {
+            throw error
+        }
+    }
+    
+    func createImageStream(_ prompt: String) async throws -> AsyncThrowingStream<String, Error> {
+        return AsyncThrowingStream<String, Error> { continuation in
+            Task(priority: .userInitiated) {
+                do {
+                    let image = try await createImage(prompt)
+                    continuation.yield(image)
+                    continuation.finish()
+                    self.appendNewMessage(input: prompt, reply: image)
+                } catch {
+                    self.appendNewMessage(input: prompt, reply: "")
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+    
+    
     func removeAllMessages() {
         messages.removeAll()
     }
@@ -243,6 +300,25 @@ extension String: CustomNSError {
             NSLocalizedDescriptionKey: self
         ]
     }
+    
+    var isImageGenerationPrompt: Bool {
+        lowercased().hasPrefix("draw") || lowercased().hasPrefix("画")
+    }
+    
+    var imagePrompt: String {
+        if lowercased().hasPrefix("draw") {
+            return self.deletingPrefix("draw")
+        } else if hasPrefix("画") {
+            return self.deletingPrefix("画")
+        }
+        return self
+    }
+    
+    func deletingPrefix(_ prefix: String) -> String {
+        guard self.hasPrefix(prefix) else { return self }
+        return String(self.dropFirst(prefix.count))
+    }
+    
 }
 
 

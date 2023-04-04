@@ -1,5 +1,5 @@
 # GPTMessage
-A SwiftUI app demonstrating ChatGPT with an iMessage-like UI.
+A SwiftUI app demonstrating ChatGPT and DALL·E with an iMessage-like UI for iOS and macOS.
 
 This is what the app looks like on iOS:
 <p float="left">
@@ -23,6 +23,15 @@ class AppConfiguration: ObservableObject {
     
 }
 ```
+### Chat
+
+Chat is driven by OpenAI's chat language models, including gpt-3.5-turbo and gpt-3.5-turbo-0301.
+### Image Generation
+
+Image Generation uses OpenAI's image generation API(DALL·E) to create images.
+
+To start drawing, simply send a message beginning with "Draw". For example, you could say `Draw a close-up, studio photographic portrait of a curious-looking blue British Shorthair cat`.
+
 ## Prompts
 
 Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)**.

@@ -78,6 +78,9 @@ enum OpenAIModelType: String, Codable {
     case chatgpt0301 = "gpt-3.5-turbo-0301"
     
     
+    case dalle = "dall-e"
+    
+    
     static var chatModels: [OpenAIModelType] {
         [.chatgpt, .chatgpt0301]
     }
@@ -106,6 +109,8 @@ enum OpenAIModelType: String, Codable {
             return [.chat]
         case .chatgpt0301:
             return [.chat]
+        case .dalle:
+            return [.image]
         }
     }
 }
@@ -114,6 +119,7 @@ enum Mode: String, CaseIterable, Codable, Identifiable {
     case completions = "Completions"
     case edits = "Edits"
     case chat = "Chat"
+    case image = "Image"
     
     var id: RawValue {
         rawValue
@@ -129,19 +135,21 @@ extension Mode {
             return "/v1/edits"
         case .chat:
             return "/v1/chat/completions"
+        case .image:
+            return "/v1/images/generations"
         }
     }
     
     var method: String {
         switch self {
-        case .completions, .edits, .chat:
+        case .completions, .edits, .chat, .image:
             return "POST"
         }
     }
     
     func baseURL() -> String {
         switch self {
-        case .completions, .edits, .chat:
+        case .completions, .edits, .chat, .image:
             return "https://api.openai.com"
         }
     }

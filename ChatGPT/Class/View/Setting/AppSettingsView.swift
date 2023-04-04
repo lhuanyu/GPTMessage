@@ -21,6 +21,9 @@ class AppConfiguration: ObservableObject {
         }
     }
     
+    @AppStorage("configuration.image.size") var imageSize: ImageGeneration.Size = .middle
+
+    
     @AppStorage("configuration.mode") var mode: Mode = .chat
     
     @AppStorage("configuration.temperature") var temperature: Double = 0.5
@@ -31,61 +34,9 @@ class AppConfiguration: ObservableObject {
     
 }
 
-extension OpenAIModelType: RawRepresentable {
-    var group: OpenAIModelGroup {
-        switch self {
-        case .textDavinci:
-            return .gpt3
-        case .textCurie:
-            return .gpt3
-        case .textBabbage:
-            return .gpt3
-        case .textAda:
-            return .gpt3
-        case .codeDavinci:
-            return .codex
-        case .codeCushman:
-            return .codex
-        case .textDavinciEdit:
-            return .feature
-        case .chatgpt:
-            return .chat
-        case .chatgpt0301:
-            return .chat
-        }
-    }
-}
-
-enum OpenAIModelGroup: String, CaseIterable, Codable, Identifiable {
-    case chat = "Chat"
-    case gpt3 = "GPT3"
-    case codex = "Codex"
-    case feature = "Feature"
-    
-    var id: RawValue {
-        rawValue
-    }
-    
-    var models: [OpenAIModelType] {
-        switch self {
-        case .chat:
-            return OpenAIModelType.chatModels
-        case .gpt3:
-            return OpenAIModelType.gpt3Models
-        case .codex:
-            return OpenAIModelType.codexModels
-        case .feature:
-            return OpenAIModelType.featureModels
-        }
-    }
-}
-
 struct AppSettingsView: View {
     
     @ObservedObject var configuration: AppConfiguration
-    
-    @State private var selectedGroup = OpenAIModelGroup.chat
-    let groups = [OpenAIModelGroup.chat, .gpt3, .codex]
     
     @State private var selectedModel = OpenAIModelType.chatgpt
     @State var models: [OpenAIModelType] = OpenAIModelType.chatModels
@@ -135,6 +86,18 @@ struct AppSettingsView: View {
                     }
                 }
                 HStack {
+                    Text("Image Size")
+                        .fixedSize()
+                    Spacer()
+                    Picker("Model", selection: configuration.$imageSize) {
+                        ForEach(ImageGeneration.Size.allCases, id: \.self) { model in
+                            Text(model.rawValue)
+                                .tag(model)
+                        }
+                    }
+                    .labelsHidden()
+                }
+                HStack {
                     Image(systemName: "key")
                     Spacer()
                     if showAPIKey {
@@ -169,7 +132,6 @@ struct AppSettingsView: View {
             }
         }
         .onAppear() {
-            self.selectedGroup = configuration.model.group
             self.selectedModel = configuration.model
             self.selectedMode = configuration.mode
         }

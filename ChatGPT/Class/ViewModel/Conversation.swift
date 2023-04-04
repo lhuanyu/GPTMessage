@@ -23,4 +23,26 @@ struct Conversation: Identifiable, Codable, Equatable {
     
     var date = Date()
     
+    var replyPreview: String? {
+        if isImageReply {
+            return String(localized: "[Image]")
+        }
+        return reply
+    }
+    
+    var isImageReply: Bool {
+        if let reply = reply {
+            return reply.hasPrefix("![Image]")
+        }
+        return false
+    }
+    
+    var replyImageURL: URL? {
+        guard let reply = reply else {
+            return nil
+        }
+        let path = String(reply.deletingPrefix("![Image](").dropLast())
+        return URL(string: path)
+    }
+    
 }

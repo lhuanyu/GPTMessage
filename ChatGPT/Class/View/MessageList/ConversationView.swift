@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import SwiftUIX
+import Kingfisher
 
 struct AnimationID {
     
@@ -79,7 +81,19 @@ struct ConversationView: View {
                 .contextMenu {
                     VStack {
                         Button {
-                            conversation.reply?.copyToPasteboard()
+                            if let imageURL = conversation.replyImageURL {
+                                ImageCache.default.retrieveImage(forKey: imageURL.absoluteString) { result in
+                                    switch result {
+                                    case let .success(image):
+                                        image.image?.copyToPasteboard()
+                                        print("copied!")
+                                    case .failure:
+                                        break
+                                    }
+                                }
+                            } else {
+                                conversation.reply?.copyToPasteboard()
+                            }
                         } label: {
                             HStack {
                                 Image(systemName: "doc.on.doc")
@@ -171,7 +185,7 @@ struct ConversationView: View {
                 isLast: conversation.isLast,
                 isSender: false
             )
-            .bubbleStyle(isMyMessage: false)
+            .bubbleStyle(isMyMessage: false, type: conversation.isImageReply ? .image : .text)
             if !conversation.isReplying {
                 if conversation.errorDesc == nil && conversation.isLast {
                     Button {
@@ -205,12 +219,24 @@ struct ConversationView: View {
                         .textSelection(.enabled)
                 }
             } else if !text.isEmpty {
-                if AppConfiguration.shared.isMarkdownEnabled && !conversation.isReplying {
-                    MessageMarkdownView(text: text)
-                        .textSelection(.enabled)
+                if let url = conversation.replyImageURL {
+                    KFImage(url)
+                        .resizable()
+                        .fade(duration: 0.25)
+                        .placeholder { p in
+                            ProgressView()
+                        }
+                        .cacheOriginalImage()
+                        .frame(maxWidth: 512, maxHeight: 512)
+                        .aspectRatio(.init(width: 1, height: 1), contentMode: .fit)
                 } else {
-                    Text(text)
-                        .textSelection(.enabled)
+                    if AppConfiguration.shared.isMarkdownEnabled && !conversation.isReplying {
+                        MessageMarkdownView(text: text)
+                            .textSelection(.enabled)
+                    } else {
+                        Text(text)
+                            .textSelection(.enabled)
+                    }
                 }
             }
             
@@ -243,6 +269,17 @@ extension String {
 #else
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(self, forType: .string)
+#endif
+    }
+}
+
+extension KFCrossPlatformImage {
+    func copyToPasteboard() {
+#if os(iOS)
+        UIPasteboard.general.image = self
+#else
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.writeObjects([self])
 #endif
     }
 }

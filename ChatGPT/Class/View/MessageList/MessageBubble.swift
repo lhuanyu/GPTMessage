@@ -103,43 +103,76 @@ extension NSBezierPath {
 #endif
 
 extension View {
-    func bubbleStyle(isMyMessage: Bool) -> some View {
-        modifier(Bubble(isMyMessage: isMyMessage))
+    func bubbleStyle(isMyMessage: Bool, type: Bubble.MessageType = .text) -> some View {
+        modifier(Bubble(isMyMessage: isMyMessage, type: type))
     }
 }
 
 struct Bubble: ViewModifier {
     
+    enum MessageType {
+        case text
+        case image
+    }
+    
     var isMyMessage: Bool
     
+    var type: MessageType = .text
+    
     func body(content: Content) -> some View {
-        if isMyMessage {
-            content
-                .padding([.leading, .trailing])
-#if os(macOS)
-                .padding(.vertical, 8)
-                .background(Color(NSColor.systemBlue))
-#else
-                .padding(.vertical, 6)
-                .background(Color(UIColor.systemBlue))
-                .contentShape(.contextMenuPreview, BubbleShape(myMessage: true))
-#endif
-                .clipShape(BubbleShape(myMessage: true))
-                .foregroundColor(.white)
-        } else {
-            content
-                .padding([.leading, .trailing])
-#if os(macOS)
-                .padding(.vertical, 8)
-                .background(replyBackgroundColor)
-#else
-                .padding(.vertical, 6)
-                .background(replyBackgroundColor)
-                .contentShape(.contextMenuPreview, BubbleShape(myMessage: false))
-#endif
-                .clipShape(BubbleShape(myMessage: false))
-                .foregroundColor(.primary)
+        switch type {
+        case .text:
+            if isMyMessage {
+                content
+                    .padding([.leading, .trailing])
+    #if os(macOS)
+                    .padding(.vertical, 8)
+                    .background(Color(NSColor.systemBlue))
+    #else
+                    .padding(.vertical, 6)
+                    .background(Color(UIColor.systemBlue))
+                    .contentShape(.contextMenuPreview, BubbleShape(myMessage: true))
+    #endif
+                    .clipShape(BubbleShape(myMessage: true))
+                    .foregroundColor(.white)
+            } else {
+                content
+                    .padding([.leading, .trailing])
+    #if os(macOS)
+                    .padding(.vertical, 8)
+                    .background(replyBackgroundColor)
+    #else
+                    .padding(.vertical, 6)
+                    .background(replyBackgroundColor)
+                    .contentShape(.contextMenuPreview, BubbleShape(myMessage: false))
+    #endif
+                    .clipShape(BubbleShape(myMessage: false))
+                    .foregroundColor(.primary)
+            }
+        case .image:
+            if isMyMessage {
+                content
+    #if os(macOS)
+                    .background(Color(NSColor.systemBlue))
+    #else
+                    .background(Color(UIColor.systemBlue))
+                    .contentShape(.contextMenuPreview, BubbleShape(myMessage: true))
+    #endif
+                    .clipShape(BubbleShape(myMessage: true))
+                    .foregroundColor(.white)
+            } else {
+                content
+    #if os(macOS)
+                    .background(replyBackgroundColor)
+    #else
+                    .background(replyBackgroundColor)
+                    .contentShape(.contextMenuPreview, BubbleShape(myMessage: false))
+    #endif
+                    .clipShape(BubbleShape(myMessage: false))
+                    .foregroundColor(.primary)
+            }
         }
+
     }
     
     private var replyBackgroundColor: Color {

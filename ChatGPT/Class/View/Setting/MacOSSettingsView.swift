@@ -80,75 +80,94 @@ struct OpenAISettingsView: View {
     @State private var showAPIKey = false
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Language Model")
-                .bold()
-            GroupBox {
-                HStack {
-                    Picker("Model", selection: AppConfiguration.shared.$model) {
-                        ForEach(OpenAIModelType.chatModels, id: \.self) { model in
-                            Text(model.rawValue)
-                                .tag(model)
-                        }
-                    }
-                }
-                .padding()
-                Divider()
-                VStack {
+        ScrollView {
+            VStack(alignment: .leading) {
+                Text("Language Model")
+                    .bold()
+                GroupBox {
                     HStack {
-                        Slider(value: AppConfiguration.shared.$temperature, in: 0...2) {
-                            Text("Temperature")
-                        } minimumValueLabel: {
-                            Text("0")
-                        } maximumValueLabel: {
-                            Text("1")
+                        Picker("Model", selection: configuration.$model) {
+                            ForEach(OpenAIModelType.chatModels, id: \.self) { model in
+                                Text(model.rawValue)
+                                    .tag(model)
+                            }
                         }
-                        Text(String(format: "%.2f", configuration.temperature))
-                            .width(30)
                     }
+                    .padding()
+                    Divider()
+                    VStack {
+                        HStack {
+                            Slider(value: configuration.$temperature, in: 0...2) {
+                                Text("Temperature")
+                            } minimumValueLabel: {
+                                Text("0")
+                            } maximumValueLabel: {
+                                Text("1")
+                            }
+                            Text(String(format: "%.2f", configuration.temperature))
+                                .width(30)
+                        }
+                    }
+                    .padding()
                 }
-                .padding()
-            }
-            .padding(.bottom)
-            GroupBox {
-                HStack {
-                    Image(systemName: "key")
-                    if showAPIKey  {
-                        TextField("", text: AppConfiguration.shared.$key)
-                            .textFieldStyle(.roundedBorder)
-                    } else {
-                        SecureField("", text: AppConfiguration.shared.$key)
-                            .textFieldStyle(.roundedBorder)
+                .padding(.bottom)
+                Text("DALL·E")
+                    .bold()
+                GroupBox {
+                    HStack {
+                        Picker("Image Size", selection: configuration.$imageSize) {
+                            ForEach(ImageGeneration.Size.allCases, id: \.self) { model in
+                                Text(model.rawValue)
+                                    .tag(model)
+                            }
+                        }
                     }
-                    Button {
-                        showAPIKey.toggle()
-                    } label: {
-                        if showAPIKey {
-                            Image(systemName: "eye.slash")
+                    .padding()
+                }
+                .padding(.bottom)
+                GroupBox {
+                    HStack {
+                        Image(systemName: "key")
+                        if showAPIKey  {
+                            TextField("", text: configuration.$key)
+                                .textFieldStyle(.roundedBorder)
                         } else {
-                            Image(systemName: "eye")
+                            SecureField("", text: configuration.$key)
+                                .textFieldStyle(.roundedBorder)
                         }
-                    }
-                    .buttonStyle(.borderless)
+                        Button {
+                            showAPIKey.toggle()
+                        } label: {
+                            if showAPIKey {
+                                Image(systemName: "eye.slash")
+                            } else {
+                                Image(systemName: "eye")
+                            }
+                        }
+                        .buttonStyle(.borderless)
 
+                    }
+                    .padding()
                 }
-                .padding()
-            }
-            HStack {
+                HStack {
+                    Spacer()
+                    Link("OpenAI Documentation", destination: URL(string: "https://platform.openai.com/docs/introduction")!)
+                }
                 Spacer()
-                Link("OpenAI Documentation", destination: URL(string: "https://platform.openai.com/docs/introduction")!)
             }
-            Spacer()
+            .padding()
         }
-        .padding()
     }
 }
 
 
 struct AppearanceSettingsView: View {
+    
+    @StateObject var configuration = AppConfiguration.shared
+    
     var body: some View {
         Form {
-            Toggle("Markdown Enabled", isOn: AppConfiguration.shared.$isMarkdownEnabled)
+            Toggle("Markdown Enabled", isOn: configuration.$isMarkdownEnabled)
                 .padding()
             Spacer()
         }
