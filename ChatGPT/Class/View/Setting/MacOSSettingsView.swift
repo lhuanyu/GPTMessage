@@ -111,6 +111,19 @@ struct OpenAISettingsView: View {
                     .padding()
                     Divider()
                     VStack(alignment: .leading) {
+                        Toggle(isOn: configuration.$isReplySuggestionsEnabled) {
+                            HStack {
+                                Text("Reply Suggestions")
+                                Spacer()
+                            }
+                        }
+                        .toggleStyle(.switch)
+                        Text("ChatGPT will generate reply suggestions based on past conversations.")
+                            .foregroundColor(.secondaryLabel)
+                    }
+                    .padding()
+                    Divider()
+                    VStack(alignment: .leading) {
                         Toggle(isOn: configuration.$isSmartModeEnabled) {
                             HStack {
                                 Text("Smart Mode")

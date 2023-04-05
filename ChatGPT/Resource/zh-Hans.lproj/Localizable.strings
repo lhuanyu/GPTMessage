@@ -56,3 +56,5 @@
 "[Image]" = "[图片]";
 "Smart Mode" = "智能模式";
 "ChatGPT will classify your prompt and then select the most appropriate model to handle it." = "ChatGPT会对您的提示进行分类，然后选择最合适的模型来处理它。";
+"Reply Suggestions" = "回复建议";
+"ChatGPT will generate reply suggestions based on past conversations." = "ChatGPT将根据过去的对话生成回复建议。";

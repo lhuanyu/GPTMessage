@@ -183,9 +183,13 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
         
         do {
             try await Task.sleep(for: .milliseconds(260))
+#if os(iOS)
             withAnimation {
                 scroll?(.bottom)
             }
+#else
+            scroll?(.bottom)
+#endif
             let stream = try await service.sendMessageStream(text)
             isStreaming = true
             AudioServicesPlaySystemSound(1301)
@@ -223,6 +227,9 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     }
     
     func createSuggestions(scroll: ((UnitPoint) -> Void)? = nil) {
+        guard AppConfiguration.shared.isReplySuggestionsEnabled else {
+            return
+        }
         Task { @MainActor in
             do {
                 let suggestions = try await service.createSuggestions()

@@ -26,6 +26,8 @@ class AppConfiguration: ObservableObject {
     
     @AppStorage("configuration.mode") var mode: Mode = .chat
     
+    @AppStorage("configuration.isReplySuggestionsEnabled") var isReplySuggestionsEnabled = true
+    
     @AppStorage("configuration.isSmartModeEnabled") var isSmartModeEnabled = true
     
     @AppStorage("configuration.temperature") var temperature: Double = 0.5
@@ -86,6 +88,11 @@ struct AppSettingsView: View {
                                 .cornerRadius(8)
                         }
                     }
+                }
+                VStack(alignment: .leading) {
+                    Toggle("Reply Suggestions", isOn: configuration.$isReplySuggestionsEnabled)
+                    Text("ChatGPT will generate reply suggestions based on past conversations.")
+                        .foregroundColor(.secondaryLabel)
                 }
                 VStack(alignment: .leading) {
                     Toggle("Smart Mode", isOn: configuration.$isSmartModeEnabled)
