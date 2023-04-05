@@ -26,6 +26,8 @@ class AppConfiguration: ObservableObject {
     
     @AppStorage("configuration.mode") var mode: Mode = .chat
     
+    @AppStorage("configuration.isSmartModeEnabled") var isSmartModeEnabled = true
+    
     @AppStorage("configuration.temperature") var temperature: Double = 0.5
     
     @AppStorage("configuration.systemPrompt") var systemPrompt: String = "You are a helpful assistant"
@@ -84,6 +86,11 @@ struct AppSettingsView: View {
                                 .cornerRadius(8)
                         }
                     }
+                }
+                VStack(alignment: .leading) {
+                    Toggle("Smart Mode", isOn: configuration.$isSmartModeEnabled)
+                    Text("ChatGPT will classify your prompt and then select the most appropriate model to handle it.")
+                        .foregroundColor(.secondaryLabel)
                 }
                 HStack {
                     Text("Image Size")

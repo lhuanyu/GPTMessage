@@ -74,7 +74,7 @@ extension Array where Element == Message {
     var contentCount: Int { reduce(0, { $0 + $1.content.token })}
 }
 
-struct Request: Codable {
+struct Chat: Codable {
     let model: String
     let temperature: Double
     let messages: [Message]

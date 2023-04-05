@@ -109,6 +109,19 @@ struct OpenAISettingsView: View {
                         }
                     }
                     .padding()
+                    Divider()
+                    VStack(alignment: .leading) {
+                        Toggle(isOn: configuration.$isSmartModeEnabled) {
+                            HStack {
+                                Text("Smart Mode")
+                                Spacer()
+                            }
+                        }
+                        .toggleStyle(.switch)
+                        Text("ChatGPT will classify your prompt and then select the most appropriate model to handle it.")
+                            .foregroundColor(.secondaryLabel)
+                    }
+                    .padding()
                 }
                 .padding(.bottom)
                 Text("DALL·E")
