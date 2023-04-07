@@ -1,5 +1,5 @@
 # GPTMessage
-A SwiftUI app demonstrating ChatGPT and DALL·E with an iMessage-like UI for iOS and macOS.
+A SwiftUI app demonstrating how ChatGPT interacts with DALL·E and HuggingFace models for iOS and macOS.
 
 This is what the app looks like on iOS:
 <p float="left">
