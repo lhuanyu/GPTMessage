@@ -145,7 +145,7 @@ class OpenAIService: @unchecked Sendable {
         let (result, response) = try await urlSession.bytes(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw "Invalid response"
+            throw String(localized: "Invalid response")
         }
         
         guard 200...299 ~= httpResponse.statusCode else {
@@ -158,7 +158,7 @@ class OpenAIService: @unchecked Sendable {
                 errorText = "\n\(errorResponse.message)"
             }
             
-            throw "Response Error: \(httpResponse.statusCode), \(errorText)"
+            throw String(localized: "Response Error: \(httpResponse.statusCode), \(errorText)")
         }
         
         return AsyncThrowingStream<String, Error> { continuation in
@@ -213,11 +213,11 @@ class OpenAIService: @unchecked Sendable {
         let (data, response) = try await urlSession.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw "Invalid response"
+            throw String(localized: "Invalid response")
         }
         
         guard 200...299 ~= httpResponse.statusCode else {
-            var error = "Response Error: \(httpResponse.statusCode)"
+            var error = String(localized: "Response Error: \(httpResponse.statusCode)")
             if let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
                 error.append("\n\(errorResponse.message)")
             }
@@ -239,11 +239,11 @@ class OpenAIService: @unchecked Sendable {
         let (data, response) = try await urlSession.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw "Invalid response"
+            throw String(localized: "Invalid response")
         }
         
         guard 200...299 ~= httpResponse.statusCode else {
-            var error = "Response Error: \(httpResponse.statusCode)"
+            var error = String(localized: "Response Error: \(httpResponse.statusCode)")
             if let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
                 error.append("\n\(errorResponse.message)")
             }
@@ -271,11 +271,11 @@ class OpenAIService: @unchecked Sendable {
         let (data, response) = try await urlSession.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw "Invalid response"
+            throw String(localized: "Invalid response")
         }
         
         guard 200...299 ~= httpResponse.statusCode else {
-            var error = "Response Error: \(httpResponse.statusCode)"
+            var error = String(localized: "Response Error: \(httpResponse.statusCode)")
             if let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
                 error.append("\n\(errorResponse.message)")
             }
@@ -287,7 +287,7 @@ class OpenAIService: @unchecked Sendable {
             if let url =  response.data.first?.url {
                 return "![Image](\(url.absoluteString))"
             } else {
-                throw "Failed to generate image."
+                throw String(localized: "Failed to generate image.")
             }
         } catch {
             throw error
@@ -306,7 +306,7 @@ class OpenAIService: @unchecked Sendable {
                         image = try await HuggingFaceService.shared.generateImage(prompt)
                     }
                     if image.isEmpty {
-                        continuation.finish(throwing: "Invalid Response")
+                        continuation.finish(throwing: String(localized: "Invalid Response"))
                     } else {
                         continuation.yield(image)
                         continuation.finish()

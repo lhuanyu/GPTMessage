@@ -18,6 +18,13 @@
 "Cancel" = "取消";
 "Confirm" = "确认";
 "Done" = "完成";
+"Regenerate response" = "重新生成";
+"Error: %@" = "错误：%@";
+"Response Error: %@" = "响应错误：%@";
+"Response Error: %@, %@" = "响应错误： %@， %@";
+"Invalid Response" = "无效的响应";
+"Failed to generate image." = "生成图片失败";
+"HuggingFace User Access Token is not set." = "HuggingFace User Access Token 未设置";
 
 "Settings" = "设置";
 

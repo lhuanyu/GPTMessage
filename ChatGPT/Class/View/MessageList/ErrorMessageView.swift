@@ -17,9 +17,10 @@ struct ErrorMessageView: View {
             Text("Error: \(error)")
                 .foregroundColor(.red)
                 .multilineTextAlignment(.leading)
-            
-            Button("Regenerate response") {
+            Button {
                 retryHandler?()
+            } label: {
+                Text("Regenerate response")
             }
             .foregroundColor(.accentColor)
             .padding([.top,.bottom])
@@ -29,6 +30,6 @@ struct ErrorMessageView: View {
 
 struct ErrorMessageView_Previews: PreviewProvider {
     static var previews: some View {
-        ErrorMessageView()
+        ErrorMessageView(error: "请求超时")
     }
 }

@@ -43,7 +43,7 @@
 		E4C65EF629CA9F7800AFA884 /* AppSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */; };
 		E4C65EF729CA9F7800AFA884 /* DialogueSessionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE029CA9F7800AFA884 /* DialogueSessionListView.swift */; };
 		E4C65EF929CA9F7800AFA884 /* OpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE329CA9F7800AFA884 /* OpenAI.swift */; };
-		E4C65EFA29CA9F7800AFA884 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE529CA9F7800AFA884 /* Models.swift */; };
+		E4C65EFA29CA9F7800AFA884 /* LanguageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE529CA9F7800AFA884 /* LanguageModels.swift */; };
 		E4C65EFB29CA9F7800AFA884 /* Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE629CA9F7800AFA884 /* Prompt.swift */; };
 		E4C65EFC29CA9F7800AFA884 /* OpenAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C65EE729CA9F7800AFA884 /* OpenAIService.swift */; };
 		E4C65EFD29CA9F7800AFA884 /* chatgpt_prompts.json in Resources */ = {isa = PBXBuildFile; fileRef = E4C65EE929CA9F7800AFA884 /* chatgpt_prompts.json */; };
@@ -119,7 +119,7 @@
 		E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettingsView.swift; sourceTree = "<group>"; };
 		E4C65EE029CA9F7800AFA884 /* DialogueSessionListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogueSessionListView.swift; sourceTree = "<group>"; };
 		E4C65EE329CA9F7800AFA884 /* OpenAI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAI.swift; sourceTree = "<group>"; };
-		E4C65EE529CA9F7800AFA884 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		E4C65EE529CA9F7800AFA884 /* LanguageModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LanguageModels.swift; sourceTree = "<group>"; };
 		E4C65EE629CA9F7800AFA884 /* Prompt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Prompt.swift; sourceTree = "<group>"; };
 		E4C65EE729CA9F7800AFA884 /* OpenAIService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenAIService.swift; sourceTree = "<group>"; };
 		E4C65EE929CA9F7800AFA884 /* chatgpt_prompts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = chatgpt_prompts.json; sourceTree = "<group>"; };
@@ -180,7 +180,7 @@
 				E4C65EE329CA9F7800AFA884 /* OpenAI.swift */,
 				E4C65EE729CA9F7800AFA884 /* OpenAIService.swift */,
 				E4924EF029DC04F000B69605 /* ImageModels.swift */,
-				E4C65EE529CA9F7800AFA884 /* Models.swift */,
+				E4C65EE529CA9F7800AFA884 /* LanguageModels.swift */,
 			);
 			path = OpenAI;
 			sourceTree = "<group>";
@@ -558,7 +558,7 @@
 				E4924EFE29DEDA2000B69605 /* Text2Image.swift in Sources */,
 				E4924EF829DE714600B69605 /* HuggingFace.swift in Sources */,
 				E4924F0829DEEC0800B69605 /* ErrorMessageView.swift in Sources */,
-				E4C65EFA29CA9F7800AFA884 /* Models.swift in Sources */,
+				E4C65EFA29CA9F7800AFA884 /* LanguageModels.swift in Sources */,
 				E4924F0229DEE8CB00B69605 /* ImageMessageView.swift in Sources */,
 				E4C65EF029CA9F7800AFA884 /* ConversationView.swift in Sources */,
 				E4C65EF429CA9F7800AFA884 /* LeadingComposerView.swift in Sources */,
