@@ -12,6 +12,11 @@ import SwiftUI
 struct MacOSSettingsView: View {
     var body: some View {
         TabView {
+            GeneralSettingsView()
+                .tabItem {
+                    Label("General", systemImage: "gear")
+                }
+            
             ModelSettingsView()
                 .tabItem {
                     Label("Model", systemImage: "brain.head.profile")
@@ -20,34 +25,73 @@ struct MacOSSettingsView: View {
                 .tabItem {
                     Label("Prompt", systemImage: "text.book.closed")
                 }
-            AppearanceSettingsView()
-                .tabItem {
-                    Label("Appearance", systemImage: "paintpalette")
-                }
-            
         }
         .frame(minWidth: 700, minHeight: 400)
     }
 }
 
+
+struct GeneralSettingsView: View {
+    
+    @StateObject var configuration = AppConfiguration.shared
+    
+    var body: some View {
+        ZStack {
+            VStack(alignment: .leading) {
+                Toggle("Markdown Enabled", isOn: configuration.$isMarkdownEnabled)
+                    .height(20)
+                Picker(selection: configuration.$preferredText2ImageService) {
+                    ForEach(AIService.allCases, id: \.self) {
+                        Text($0.rawValue.capitalizingFirstLetter())
+                    }
+                }
+                .frame(width: 180, height: 30)
+                Spacer()
+            }
+            .padding(.top)
+            HStack {
+                Spacer()
+                VStack(alignment: .trailing) {
+                    Text("")
+                        .height(20)
+                    Text("Text2Image:")
+                        .height(30)
+                    Spacer()
+                }
+                .offset(x: -295)
+            }
+            .frame(width: 400)
+            .padding(.top)
+        }
+    }
+}
+
+
 struct ModelSettingsView: View {
     
     
     enum Item: String, CaseIterable, Identifiable, Hashable {
-        case openAI = "openAI"
+        case openAI
+        case huggingFace
         
         var id: String { rawValue }
         
+        @ViewBuilder
         var destination: some View {
-            OpenAISettingsView()
+            switch self {
+            case .openAI:
+                OpenAISettingsView()
+            case .huggingFace:
+                HuggingFaceSettingsView()
+            }
         }
         
         var label: some View {
             HStack {
-                Image("openai")
+                Image(self.rawValue.lowercased())
                     .resizable()
                     .frame(width: 40, height: 40)
-                Text("OpenAI")
+                Text(rawValue.capitalizingFirstLetter())
             }
         }
     }
@@ -72,134 +116,6 @@ struct ModelSettingsView: View {
         }
     }
 }
-
-struct OpenAISettingsView: View {
-    
-    @StateObject var configuration = AppConfiguration.shared
-    
-    @State private var showAPIKey = false
-    
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading) {
-                Text("Language Model")
-                    .bold()
-                GroupBox {
-                    HStack {
-                        Picker("Model", selection: configuration.$model) {
-                            ForEach(OpenAIModelType.chatModels, id: \.self) { model in
-                                Text(model.rawValue)
-                                    .tag(model)
-                            }
-                        }
-                    }
-                    .padding()
-                    Divider()
-                    VStack {
-                        HStack {
-                            Slider(value: configuration.$temperature, in: 0...2) {
-                                Text("Temperature")
-                            } minimumValueLabel: {
-                                Text("0")
-                            } maximumValueLabel: {
-                                Text("1")
-                            }
-                            Text(String(format: "%.2f", configuration.temperature))
-                                .width(30)
-                        }
-                    }
-                    .padding()
-                    Divider()
-                    VStack(alignment: .leading) {
-                        Toggle(isOn: configuration.$isReplySuggestionsEnabled) {
-                            HStack {
-                                Text("Reply Suggestions")
-                                Spacer()
-                            }
-                        }
-                        .toggleStyle(.switch)
-                        Text("ChatGPT will generate reply suggestions based on past conversations.")
-                            .foregroundColor(.secondaryLabel)
-                    }
-                    .padding()
-                    Divider()
-                    VStack(alignment: .leading) {
-                        Toggle(isOn: configuration.$isSmartModeEnabled) {
-                            HStack {
-                                Text("Smart Mode")
-                                Spacer()
-                            }
-                        }
-                        .toggleStyle(.switch)
-                        Text("ChatGPT will classify your prompt and then select the most appropriate model to handle it.")
-                            .foregroundColor(.secondaryLabel)
-                    }
-                    .padding()
-                }
-                .padding(.bottom)
-                Text("DALL·E")
-                    .bold()
-                GroupBox {
-                    HStack {
-                        Picker("Image Size", selection: configuration.$imageSize) {
-                            ForEach(ImageGeneration.Size.allCases, id: \.self) { model in
-                                Text(model.rawValue)
-                                    .tag(model)
-                            }
-                        }
-                    }
-                    .padding()
-                }
-                .padding(.bottom)
-                GroupBox {
-                    HStack {
-                        Image(systemName: "key")
-                        if showAPIKey  {
-                            TextField("", text: configuration.$key)
-                                .textFieldStyle(.roundedBorder)
-                        } else {
-                            SecureField("", text: configuration.$key)
-                                .textFieldStyle(.roundedBorder)
-                        }
-                        Button {
-                            showAPIKey.toggle()
-                        } label: {
-                            if showAPIKey {
-                                Image(systemName: "eye.slash")
-                            } else {
-                                Image(systemName: "eye")
-                            }
-                        }
-                        .buttonStyle(.borderless)
-
-                    }
-                    .padding()
-                }
-                HStack {
-                    Spacer()
-                    Link("OpenAI Documentation", destination: URL(string: "https://platform.openai.com/docs/introduction")!)
-                }
-                Spacer()
-            }
-            .padding()
-        }
-    }
-}
-
-
-struct AppearanceSettingsView: View {
-    
-    @StateObject var configuration = AppConfiguration.shared
-    
-    var body: some View {
-        Form {
-            Toggle("Markdown Enabled", isOn: configuration.$isMarkdownEnabled)
-                .padding()
-            Spacer()
-        }
-    }
-}
-
 
 struct PromptSettingsView: View {
     
@@ -269,3 +185,16 @@ struct MacOSSettingsView_Previews: PreviewProvider {
 }
 
 #endif
+
+
+extension String {
+    
+    func capitalizingFirstLetter() -> String {
+        return prefix(1).capitalized + dropFirst()
+    }
+    
+    mutating func capitalizeFirstLetter() {
+        self = self.capitalizingFirstLetter()
+    }
+    
+}

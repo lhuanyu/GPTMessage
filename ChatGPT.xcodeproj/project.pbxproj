@@ -10,6 +10,15 @@
 		E4924EED29DB0A4400B69605 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E4924EEF29DB0A4400B69605 /* Localizable.strings */; };
 		E4924EF129DC04F000B69605 /* ImageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924EF029DC04F000B69605 /* ImageModels.swift */; };
 		E4924EF429DC309E00B69605 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = E4924EF329DC309E00B69605 /* Kingfisher */; };
+		E4924EF629DE702400B69605 /* HuggingFaceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924EF529DE702400B69605 /* HuggingFaceService.swift */; };
+		E4924EF829DE714600B69605 /* HuggingFace.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924EF729DE714600B69605 /* HuggingFace.swift */; };
+		E4924EFE29DEDA2000B69605 /* Text2Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924EFD29DEDA2000B69605 /* Text2Image.swift */; };
+		E4924F0229DEE8CB00B69605 /* ImageMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0129DEE8CB00B69605 /* ImageMessageView.swift */; };
+		E4924F0429DEE8DD00B69605 /* ImageDataMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0329DEE8DD00B69605 /* ImageDataMessageView.swift */; };
+		E4924F0629DEE8E900B69605 /* TextMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0529DEE8E900B69605 /* TextMessageView.swift */; };
+		E4924F0829DEEC0800B69605 /* ErrorMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0729DEEC0800B69605 /* ErrorMessageView.swift */; };
+		E4924F0A29DEF35200B69605 /* HuggingFaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0929DEF35200B69605 /* HuggingFaceSettingsView.swift */; };
+		E4924F0C29DF2AD800B69605 /* OpenAISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0B29DF2AD800B69605 /* OpenAISettingsView.swift */; };
 		E4994DEB29D6E655002981D0 /* CustomPromptsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */; };
 		E4994DED29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */; };
 		E4994DF229DA8B29002981D0 /* MacOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */; };
@@ -73,6 +82,15 @@
 /* Begin PBXFileReference section */
 		E4924EEE29DB0A4400B69605 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E4924EF029DC04F000B69605 /* ImageModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModels.swift; sourceTree = "<group>"; };
+		E4924EF529DE702400B69605 /* HuggingFaceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceService.swift; sourceTree = "<group>"; };
+		E4924EF729DE714600B69605 /* HuggingFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFace.swift; sourceTree = "<group>"; };
+		E4924EFD29DEDA2000B69605 /* Text2Image.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Text2Image.swift; sourceTree = "<group>"; };
+		E4924F0129DEE8CB00B69605 /* ImageMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMessageView.swift; sourceTree = "<group>"; };
+		E4924F0329DEE8DD00B69605 /* ImageDataMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDataMessageView.swift; sourceTree = "<group>"; };
+		E4924F0529DEE8E900B69605 /* TextMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageView.swift; sourceTree = "<group>"; };
+		E4924F0729DEEC0800B69605 /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
+		E4924F0929DEF35200B69605 /* HuggingFaceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceSettingsView.swift; sourceTree = "<group>"; };
+		E4924F0B29DF2AD800B69605 /* OpenAISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAISettingsView.swift; sourceTree = "<group>"; };
 		E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptsView.swift; sourceTree = "<group>"; };
 		E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewDidScrollViewModifier.swift; sourceTree = "<group>"; };
 		E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSSettingsView.swift; sourceTree = "<group>"; };
@@ -146,11 +164,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E4924EFB29DED9C800B69605 /* HuggingFace */ = {
+			isa = PBXGroup;
+			children = (
+				E4924EF729DE714600B69605 /* HuggingFace.swift */,
+				E4924EF529DE702400B69605 /* HuggingFaceService.swift */,
+				E4924EFD29DEDA2000B69605 /* Text2Image.swift */,
+			);
+			path = HuggingFace;
+			sourceTree = "<group>";
+		};
+		E4924EFC29DED9D100B69605 /* OpenAI */ = {
+			isa = PBXGroup;
+			children = (
+				E4C65EE329CA9F7800AFA884 /* OpenAI.swift */,
+				E4C65EE729CA9F7800AFA884 /* OpenAIService.swift */,
+				E4924EF029DC04F000B69605 /* ImageModels.swift */,
+				E4C65EE529CA9F7800AFA884 /* Models.swift */,
+			);
+			path = OpenAI;
+			sourceTree = "<group>";
+		};
 		E4994DF029DA8AF8002981D0 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
 				E4C65EDE29CA9F7800AFA884 /* AppSettingsView.swift */,
 				E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */,
+				E4924F0B29DF2AD800B69605 /* OpenAISettingsView.swift */,
+				E4924F0929DEF35200B69605 /* HuggingFaceSettingsView.swift */,
 				E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */,
 				E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */,
 			);
@@ -253,6 +294,10 @@
 			children = (
 				E4C65ED729CA9F7800AFA884 /* MessageListView.swift */,
 				E4C65ED829CA9F7800AFA884 /* ConversationView.swift */,
+				E4924F0529DEE8E900B69605 /* TextMessageView.swift */,
+				E4924F0729DEEC0800B69605 /* ErrorMessageView.swift */,
+				E4924F0129DEE8CB00B69605 /* ImageMessageView.swift */,
+				E4924F0329DEE8DD00B69605 /* ImageDataMessageView.swift */,
 				E4C65ED929CA9F7800AFA884 /* MessageMarkdownView.swift */,
 				E4C65EDA29CA9F7800AFA884 /* MessageBubble.swift */,
 				E4EAAFC229D1E25900A37FA5 /* BottomViews */,
@@ -273,8 +318,8 @@
 		E4C65EE229CA9F7800AFA884 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				E4C65EE329CA9F7800AFA884 /* OpenAI.swift */,
-				E4C65EE729CA9F7800AFA884 /* OpenAIService.swift */,
+				E4924EFC29DED9D100B69605 /* OpenAI */,
+				E4924EFB29DED9C800B69605 /* HuggingFace */,
 				E4C65EE429CA9F7800AFA884 /* Models */,
 			);
 			path = API;
@@ -283,8 +328,6 @@
 		E4C65EE429CA9F7800AFA884 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E4C65EE529CA9F7800AFA884 /* Models.swift */,
-				E4924EF029DC04F000B69605 /* ImageModels.swift */,
 				E4C65EE629CA9F7800AFA884 /* Prompt.swift */,
 			);
 			path = Models;
@@ -496,18 +539,27 @@
 				E4924EF129DC04F000B69605 /* ImageModels.swift in Sources */,
 				E4C65EFF29CA9F7800AFA884 /* KeyboardPublisher.swift in Sources */,
 				E4C65EFE29CA9F7800AFA884 /* Splash.swift in Sources */,
+				E4924F0A29DEF35200B69605 /* HuggingFaceSettingsView.swift in Sources */,
 				E4C65EF729CA9F7800AFA884 /* DialogueSessionListView.swift in Sources */,
 				E4E99BC929D5AF9F00C0FCBD /* ToolTipView.swift in Sources */,
 				E4C65EF329CA9F7800AFA884 /* ReplyingIndicatorView.swift in Sources */,
 				E4C65EED29CA9F7800AFA884 /* DialogueSession.swift in Sources */,
 				E4C65EF629CA9F7800AFA884 /* AppSettingsView.swift in Sources */,
+				E4924F0429DEE8DD00B69605 /* ImageDataMessageView.swift in Sources */,
 				E4E99BD029D681A000C0FCBD /* PromptsListView.swift in Sources */,
 				E4C65EF129CA9F7800AFA884 /* MessageMarkdownView.swift in Sources */,
 				E4C65EF529CA9F7800AFA884 /* ComposerInputView.swift in Sources */,
+				E4924F0C29DF2AD800B69605 /* OpenAISettingsView.swift in Sources */,
+				E4924F0629DEE8E900B69605 /* TextMessageView.swift in Sources */,
 				E4C65EFC29CA9F7800AFA884 /* OpenAIService.swift in Sources */,
 				E4C65EF229CA9F7800AFA884 /* MessageBubble.swift in Sources */,
 				E4C65EA429CA9E7E00AFA884 /* Persistence.swift in Sources */,
+				E4924EF629DE702400B69605 /* HuggingFaceService.swift in Sources */,
+				E4924EFE29DEDA2000B69605 /* Text2Image.swift in Sources */,
+				E4924EF829DE714600B69605 /* HuggingFace.swift in Sources */,
+				E4924F0829DEEC0800B69605 /* ErrorMessageView.swift in Sources */,
 				E4C65EFA29CA9F7800AFA884 /* Models.swift in Sources */,
+				E4924F0229DEE8CB00B69605 /* ImageMessageView.swift in Sources */,
 				E4C65EF029CA9F7800AFA884 /* ConversationView.swift in Sources */,
 				E4C65EF429CA9F7800AFA884 /* LeadingComposerView.swift in Sources */,
 			);

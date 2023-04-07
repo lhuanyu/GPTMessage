@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 struct ImageGeneration: Codable {
     enum Size: String, Codable, CaseIterable {
         case small = "256x256"
@@ -21,17 +19,6 @@ struct ImageGeneration: Codable {
     var size: Size = AppConfiguration.shared.imageSize
 }
 
-//{
-//  "created": 1589478378,
-//  "data": [
-//    {
-//      "url": "https://..."
-//    },
-//    {
-//      "url": "https://..."
-//    }
-//  ]
-//}
 struct ImageGenerationResponse: Codable {
     var data: [URLResponse]
 }

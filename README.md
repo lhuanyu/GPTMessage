@@ -18,11 +18,13 @@ And macOS:
 Chat Completion is driven by OpenAI's chat language models, including gpt-3.5-turbo and gpt-3.5-turbo-0301.
 ### Image Generation
 
-Image Generation uses OpenAI's image generation API(DALL·E) to create images.
+Image Generation uses OpenAI's image generation API(DALL·E) and HuggingFace's Inference API to create images.
 
 To start drawing, simply send a message beginning with "Draw". For example, you could say `Draw a close-up, studio photographic portrait of a curious-looking blue British Shorthair cat`.
 
 `Draw something` is a hardcoded prompt. However, when Smart Mode is enabled, ChatGPT will classify your prompt and select the most appropriate model to handle it. Therefore, you could ask, `Can you assist me in creating a close-up, studio photographic portrait of a curious-looking blue British Shorthair cat?`.
+
+Hugging Face's Inference API is the preferred option since it's free(but slow). You can easily switch to DALL·E in the settings.
 
 ## Prompts
 

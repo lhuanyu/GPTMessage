@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+enum MessageType {
+    case text
+    case image
+    case imageData
+    case error
+}
+
 struct Conversation: Identifiable, Codable, Equatable {
     
     var id = UUID()
@@ -24,20 +31,31 @@ struct Conversation: Identifiable, Codable, Equatable {
     var date = Date()
     
     var replyPreview: String? {
-        if isImageReply {
+        if replyType == .image || replyType == .imageData {
             return String(localized: "[Image]")
         }
         return reply
     }
     
-    var isImageReply: Bool {
-        if let reply = reply {
-            return reply.hasPrefix("![Image]")
+    var replyType: MessageType {
+        guard errorDesc == nil else {
+            return .error
         }
-        return false
+        guard let reply = reply else {
+            return .error
+        }
+        if reply.hasPrefix("![Image]") {
+            return .image
+        } else if reply.hasPrefix("![ImageData]") {
+            return .imageData
+        }
+        return .text
     }
     
     var replyImageURL: URL? {
+        guard replyType == .image else {
+            return nil
+        }
         guard let reply = reply else {
             return nil
         }
@@ -45,4 +63,14 @@ struct Conversation: Identifiable, Codable, Equatable {
         return URL(string: path)
     }
     
+    var replyImageData: Data? {
+        guard replyType == .imageData else {
+            return nil
+        }
+        guard let reply = reply else {
+            return nil
+        }
+        let base64 = String(reply.deletingPrefix("![ImageData](data:image/png;base64,").dropLast())
+        return Data(base64Encoded: base64)
+    }
 }

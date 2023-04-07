@@ -103,17 +103,12 @@ extension NSBezierPath {
 #endif
 
 extension View {
-    func bubbleStyle(isMyMessage: Bool, type: Bubble.MessageType = .text) -> some View {
+    func bubbleStyle(isMyMessage: Bool, type: MessageType = .text) -> some View {
         modifier(Bubble(isMyMessage: isMyMessage, type: type))
     }
 }
 
 struct Bubble: ViewModifier {
-    
-    enum MessageType {
-        case text
-        case image
-    }
     
     var isMyMessage: Bool
     
@@ -121,7 +116,7 @@ struct Bubble: ViewModifier {
     
     func body(content: Content) -> some View {
         switch type {
-        case .text:
+        case .text, .error:
             if isMyMessage {
                 content
                     .padding([.leading, .trailing])
@@ -149,7 +144,7 @@ struct Bubble: ViewModifier {
                     .clipShape(BubbleShape(myMessage: false))
                     .foregroundColor(.primary)
             }
-        case .image:
+        case .image, .imageData:
             if isMyMessage {
                 content
     #if os(macOS)

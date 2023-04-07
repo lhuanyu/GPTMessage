@@ -77,7 +77,7 @@ struct ConversationView: View {
                     }
                 }
         } else {
-            chatMessage
+            replyMessage
                 .contextMenu {
                     VStack {
                         Button {
@@ -91,6 +91,8 @@ struct ConversationView: View {
                                         break
                                     }
                                 }
+                            } else if let data = conversation.replyImageData {
+                                KFCrossPlatformImage(data: data)?.copyToPasteboard()
                             } else {
                                 conversation.reply?.copyToPasteboard()
                             }
@@ -129,136 +131,104 @@ struct ConversationView: View {
         HStack(spacing: 0) {
             Spacer()
             if conversation.isLast {
-                if !conversation.isReplying {
-                    messageEditButton()
-                }
-                messageContent(
-                    text: conversation.input,
-                    isLast: conversation.isLast,
-                    isSender: true
-                )
-                .bubbleStyle(isMyMessage: true)
-                .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
+                messageEditButton()
+                senderMessageContent
+                    .bubbleStyle(isMyMessage: true)
+                    .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
             } else {
-                messageContent(
-                    text: conversation.input,
-                    isLast: false,
-                    isSender: true
-                )
-                .bubbleStyle(isMyMessage: true)
+                senderMessageContent
+                    .bubbleStyle(isMyMessage: true)
             }
+        }
+    }
+    
+    @ViewBuilder
+    var senderMessageContent: some View {
+        if isEditing {
+            TextField("", text: $editingMessage, axis: .vertical)
+                .foregroundColor(.primary)
+                .focused($isFocused)
+                .lineLimit(1...20)
+                .background(.background)
+        } else {
+            Text(conversation.input)
+                .textSelection(.enabled)
         }
     }
     
     @ViewBuilder
     func messageEditButton() -> some View {
-        Button {
-            if isEditing {
-                if editingMessage != conversation.input {
-                    var message = conversation
-                    message.input = editingMessage
-                    retryHandler(message)
+        if conversation.isReplying {
+            EmptyView()
+        } else {
+            Button {
+                if isEditing {
+                    if editingMessage != conversation.input {
+                        var message = conversation
+                        message.input = editingMessage
+                        retryHandler(message)
+                    }
+                } else {
+                    editingMessage = conversation.input
                 }
-            } else {
-                editingMessage = conversation.input
+                isEditing.toggle()
+                isFocused = isEditing
+            } label: {
+                if isEditing {
+                    Image(systemName: "checkmark")
+                } else {
+                    Image(systemName: "pencil")
+                }
             }
-            isEditing.toggle()
-            isFocused = isEditing
-        } label: {
-            if isEditing {
-                Image(systemName: "checkmark")
-            } else {
-                Image(systemName: "pencil")
-            }
+            .frame(width: 30)
+            .padding(.trailing)
+            .padding(.leading, -50)
         }
-        .frame(width: 30)
-        .padding(.trailing)
-        .padding(.leading, -50)
     }
     
-    var chatMessage: some View {
+    var replyMessage: some View {
         HStack(spacing: 0) {
-            messageContent(
-                text: conversation.reply ?? "",
-                errorDesc: conversation.errorDesc,
-                showDotLoading: conversation.isReplying,
-                isLast: conversation.isLast,
-                isSender: false
-            )
-            .bubbleStyle(isMyMessage: false, type: conversation.isImageReply ? .image : .text)
-            if !conversation.isReplying {
-                if conversation.errorDesc == nil && conversation.isLast {
-                    Button {
+            VStack(alignment: .leading) {
+                switch conversation.replyType {
+                case .text:
+                    TextMessageView(text: conversation.reply ?? "", isReplying: conversation.isReplying)
+                case .image:
+                    ImageMessageView(url: conversation.replyImageURL)
+                case .imageData:
+                    ImageDataMessageView(data: conversation.replyImageData)
+                case .error:
+                    ErrorMessageView(error: conversation.errorDesc) {
                         retryHandler(conversation)
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                        }
                     }
-                    .frame(width: 30)
-                    .padding(.leading)
-                    .padding(.trailing, -50)
+                }
+                if conversation.isReplying {
+                    ReplyingIndicatorView()
+                        .frame(width: 48, height: 24)
                 }
             }
+            .bubbleStyle(isMyMessage: false, type: conversation.replyType)
+            retryButton
             Spacer()
         }
     }
     
     @ViewBuilder
-    func messageContent(text: String, errorDesc: String? = nil, showDotLoading: Bool = false, isLast: Bool = false, isSender: Bool = false) -> some View {
-        VStack(alignment: .leading) {
-            if isSender {
-                if isEditing {
-                    TextField("", text: $editingMessage, axis: .vertical)
-                        .foregroundColor(.primary)
-                        .focused($isFocused)
-                        .lineLimit(1...20)
-                        .background(.background)
-                } else if !text.isEmpty {
-                    Text(text)
-                        .textSelection(.enabled)
-                }
-            } else if !text.isEmpty {
-                if let url = conversation.replyImageURL {
-                    KFImage(url)
-                        .resizable()
-                        .fade(duration: 0.25)
-                        .placeholder { p in
-                            ProgressView()
-                        }
-                        .cacheOriginalImage()
-                        .frame(maxWidth: 512, maxHeight: 512)
-                        .aspectRatio(.init(width: 1, height: 1), contentMode: .fit)
-                } else {
-                    if AppConfiguration.shared.isMarkdownEnabled && !conversation.isReplying {
-                        MessageMarkdownView(text: text)
-                            .textSelection(.enabled)
-                    } else {
-                        Text(text)
-                            .textSelection(.enabled)
+    var retryButton: some View {
+        if !conversation.isReplying {
+            if conversation.errorDesc == nil && conversation.isLast {
+                Button {
+                    retryHandler(conversation)
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
                     }
                 }
-            }
-            
-            if let error = errorDesc {
-                Text("Error: \(error)")
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.leading)
-                
-                Button("Regenerate response") {
-                    retryHandler(conversation)
-                }
-                .foregroundColor(.accentColor)
-                .padding([.top,.bottom])
-            }
-            
-            if showDotLoading {
-                ReplyingIndicatorView()
-                    .frame(width: 48, height: 24)
+                .frame(width: 30)
+                .padding(.leading)
+                .padding(.trailing, -50)
             }
         }
     }
-    
     
 }
 

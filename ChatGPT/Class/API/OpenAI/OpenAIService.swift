@@ -134,10 +134,10 @@ class OpenAIService: @unchecked Sendable {
             )
             print(taskReply)
             if let prompt = taskReply.normalizedPrompts.first {
-                return try await createImageStream(prompt)
+                return try await generateImageStream(prompt)
             }
         } else if input.isImageGenerationPrompt {
-            return try await createImageStream(input.imagePrompt)
+            return try await generateImageStream(input.imagePrompt)
         }
         
         let urlRequest = try makeRequest(with: input, stream: true)
@@ -265,7 +265,7 @@ class OpenAIService: @unchecked Sendable {
         }
     }
     
-    func createImage(_ prompt: String) async throws -> String {
+    func generateImage(_ prompt: String) async throws -> String {
         let urlRequest = try makeRequest(with: prompt, mode: .image)
         
         let (data, response) = try await urlSession.data(for: urlRequest)
@@ -294,14 +294,24 @@ class OpenAIService: @unchecked Sendable {
         }
     }
     
-    func createImageStream(_ prompt: String) async throws -> AsyncThrowingStream<String, Error> {
+    func generateImageStream(_ prompt: String) async throws -> AsyncThrowingStream<String, Error> {
         return AsyncThrowingStream<String, Error> { continuation in
             Task(priority: .userInitiated) {
                 do {
-                    let image = try await createImage(prompt)
-                    continuation.yield(image)
-                    continuation.finish()
-                    self.appendNewMessage(input: prompt, reply: image)
+                    var image: String
+                    switch AppConfiguration.shared.preferredText2ImageService {
+                    case .openAI:
+                        image = try await generateImage(prompt)
+                    case .huggingFace:
+                        image = try await HuggingFaceService.shared.generateImage(prompt)
+                    }
+                    if image.isEmpty {
+                        continuation.finish(throwing: "Invalid Response")
+                    } else {
+                        continuation.yield(image)
+                        continuation.finish()
+                        self.appendNewMessage(input: prompt, reply: image)
+                    }
                 } catch {
                     self.appendNewMessage(input: prompt, reply: "")
                     continuation.finish(throwing: error)
@@ -309,7 +319,6 @@ class OpenAIService: @unchecked Sendable {
             }
         }
     }
-    
     
     func removeAllMessages() {
         messages.removeAll()

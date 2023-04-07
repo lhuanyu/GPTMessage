@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+
+enum AIService: String, CaseIterable {
+    case openAI
+    case huggingFace
+}
+
 class AppConfiguration: ObservableObject {
     
     static let shared = AppConfiguration()
@@ -35,7 +41,9 @@ class AppConfiguration: ObservableObject {
     @AppStorage("configuration.systemPrompt") var systemPrompt: String = "You are a helpful assistant"
     
     @AppStorage("configuration.isMarkdownEnabled") var isMarkdownEnabled: Bool = false
-    
+        
+    @AppStorage("configuration.preferredText2ImageService") var preferredText2ImageService: AIService = .huggingFace
+
 }
 
 struct AppSettingsView: View {
@@ -55,80 +63,45 @@ struct AppSettingsView: View {
     
     var body: some View {
         Form {
-            Section("Appearance") {
+            Section("General") {
                 HStack {
+                    Image(systemName: "text.bubble.fill")
+                        .renderingMode(.original)
                     Toggle("Markdown Enabled", isOn: $configuration.isMarkdownEnabled)
                     Spacer()
                 }
+                HStack {
+                    Image(systemName: "paintpalette.fill")
+                    Text("Text2Image")
+                        .fixedSize()
+                    Spacer()
+                    Picker("Text2Image", selection: configuration.$preferredText2ImageService) {
+                        ForEach(AIService.allCases, id: \.self) { service in
+                            Text(service.rawValue.capitalizingFirstLetter())
+                        }
+                    }
+                    .labelsHidden()
+                }
             }
-            Section("OpenAI") {
-                HStack {
-                    Text("Model")
-                        .fixedSize()
-                    Spacer()
-                    Picker("Model", selection: $selectedModel) {
-                        ForEach(models, id: \.self) { model in
-                            Text(model.rawValue)
-                                .tag(model)
-                        }
-                    }
-                    .labelsHidden()
-                    .onChange(of: selectedModel, perform: updateModes(_:))
-                }
-                VStack {
-                    Stepper(value: $configuration.temperature, in: 0...2, step: 0.1) {
-                        HStack {
-                            Text("Temperature")
-                            Spacer()
-                            Text(String(format: "%.1f", configuration.temperature))
-                                .padding(.horizontal)
-                                .height(32)
-                                .width(60)
-                                .background(Color.secondarySystemFill)
-                                .cornerRadius(8)
-                        }
+            Section("Model") {
+                NavigationLink {
+                    OpenAISettingsView()
+                } label: {
+                    HStack {
+                        Image("openai")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("OpenAI")
                     }
                 }
-                VStack(alignment: .leading) {
-                    Toggle("Reply Suggestions", isOn: configuration.$isReplySuggestionsEnabled)
-                    Text("ChatGPT will generate reply suggestions based on past conversations.")
-                        .foregroundColor(.secondaryLabel)
-                }
-                VStack(alignment: .leading) {
-                    Toggle("Smart Mode", isOn: configuration.$isSmartModeEnabled)
-                    Text("ChatGPT will classify your prompt and then select the most appropriate model to handle it.")
-                        .foregroundColor(.secondaryLabel)
-                }
-                HStack {
-                    Text("Image Size")
-                        .fixedSize()
-                    Spacer()
-                    Picker("Model", selection: configuration.$imageSize) {
-                        ForEach(ImageGeneration.Size.allCases, id: \.self) { model in
-                            Text(model.rawValue)
-                                .tag(model)
-                        }
-                    }
-                    .labelsHidden()
-                }
-                HStack {
-                    Image(systemName: "key")
-                    Spacer()
-                    if showAPIKey {
-                        TextField("OpenAI API Key", text: $configuration.key)
-                            .truncationMode(.middle)
-                    } else {
-                        SecureField("OpenAI API Key", text: $configuration.key)
-                            .truncationMode(.middle)
-                    }
-                    Button {
-                        showAPIKey.toggle()
-                    } label: {
-                        if showAPIKey {
-                            Image(systemName: "eye.slash")
-                        } else {
-                            Image(systemName: "eye")
-                        }
+                NavigationLink {
+                    HuggingFaceSettingsView()
+                } label: {
+                    HStack {
+                        Image("huggingface")
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                        Text("HuggingFace")
                     }
                 }
             }
@@ -136,12 +109,18 @@ struct AppSettingsView: View {
                 NavigationLink {
                     PromptsListView()
                 } label: {
-                    Text("Sync Prompts")
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                        Text("Sync Prompts")
+                    }
                 }
                 NavigationLink {
                     CustomPromptsView()
                 } label: {
-                    Text("Custom Prompts")
+                    HStack {
+                        Image(systemName: "person.fill")
+                        Text("Custom Prompts")
+                    }
                 }
             }
         }
