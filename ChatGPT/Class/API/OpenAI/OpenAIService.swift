@@ -20,7 +20,7 @@ class OpenAIService: @unchecked Sendable {
     
     private lazy var urlSession: URLSession =  {
         let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 10
+        configuration.timeoutIntervalForRequest = 30
         let session = URLSession(configuration: configuration)
         return session
     }()
@@ -34,7 +34,7 @@ class OpenAIService: @unchecked Sendable {
         urlRequest.httpBody = try makeJSONBody(with: input, mode: mode, stream: stream)
         return urlRequest
     }
-
+    
     private var headers: [String: String] {
         [
             "Content-Type": "application/json",
@@ -75,7 +75,7 @@ class OpenAIService: @unchecked Sendable {
     }
     
     func createTitle() async throws -> String {
-        try await sendMessage("Summarize our conversation, give me a title as short as possible in the language of your last response. Return the title only.", appendNewMessage: false)
+        try await sendTaskMessage("Summarize our conversation, give me a title as short as possible in the language of your last response. Return the title only.")
     }
     
     private var suggestionsCount: Int {
@@ -94,7 +94,7 @@ class OpenAIService: @unchecked Sendable {
         
         let suggestionReply = try await sendTaskMessage(prompt)
         print(suggestionReply)
-
+        
         return suggestionReply.normalizedPrompts
     }
     
@@ -103,7 +103,7 @@ class OpenAIService: @unchecked Sendable {
         switch mode {
         case .chat:
             let request = Chat(model: configuration.model.rawValue, temperature: configuration.temperature,
-                                  messages: trimConversation(with: input), stream: stream)
+                               messages: trimConversation(with: input), stream: stream)
             return try JSONEncoder().encode(request)
         case .edits:
             let instruct = Instruction(instruction: input, model: configuration.model.rawValue, input: "")
@@ -122,25 +122,107 @@ class OpenAIService: @unchecked Sendable {
         messages.append(.init(role: "assistant", content: reply))
     }
     
-    func sendMessageStream(_ input: String) async throws -> AsyncThrowingStream<String, Error> {
+    func sendMessage(_ input: String, data: Data? = nil) async throws -> AsyncThrowingStream<String, Error> {
         
-        if AppConfiguration.shared.isSmartModeEnabled {
-            let taskReply = try await sendTaskMessage(
-                """
-                Determine whether the prompt below is an image generation prompt:
-                \(input)
-                If it is an image generation prompt, remove the command words in the prompt, leave only the object with modifiers and styles needed to draw, and return it in a [].
-                """
-            )
-            print(taskReply)
-            if let prompt = taskReply.normalizedPrompts.first {
-                return try await generateImageStream(prompt)
+        var messageText = input
+        do {
+            if let data = data {
+                let caption = try await HuggingFaceService.shared.createCaption(for: data)
+                print("Image Caption: \(caption)")
+                let captionPrompt =
+                                """
+                                I sent you an image. There is an image description blow, write a more readable and human-friendly version based on the original description. You must also ask me how to handle the image in next step.
+                                \(caption)
+                                """
+                messageText = "An image: \(caption)"
+                return try await sendTaskMessageStream(
+                    captionPrompt
+                    ,
+                    messageText: messageText,
+                    temperature: 0.5
+                )
             }
-        } else if input.isImageGenerationPrompt {
-            return try await generateImageStream(input.imagePrompt)
+            
+            if AppConfiguration.shared.isSmartModeEnabled {
+                if let taskReply = try? await sendTaskMessage(
+                    """
+                    Determine whether the prompt below is an image generation prompt based on our conversations history:
+                    \(input)
+                    If it is an image generation prompt which has a high probability, remove the command words in the prompt, leave only the object with modifiers and styles needed to draw, and must return it in a [].
+                    """
+                )  {
+                    print(taskReply)
+                    if let prompt = taskReply.normalizedPrompts.first {
+                        return try await generateImageStream(prompt, input: input)
+                    }
+                }
+            } else if input.isImageGenerationPrompt {
+                return try await generateImageStream(input.imagePrompt)
+            }
+            
+            return try await sendMessageStream(input)
+        } catch {
+            appendNewMessage(input: messageText, reply: "")
+            throw error
+        }
+    }
+    
+    func sendMessageStream(_ input: String) async throws -> AsyncThrowingStream<String, Error> {
+        let urlRequest = try makeRequest(with: input, stream: true)
+        
+        let (result, response) = try await urlSession.bytes(for: urlRequest)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw String(localized: "Invalid response")
         }
         
-        let urlRequest = try makeRequest(with: input, stream: true)
+        guard 200...299 ~= httpResponse.statusCode else {
+            var errorText = ""
+            for try await line in result.lines {
+                errorText += line
+            }
+            
+            if let data = errorText.data(using: .utf8), let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
+                errorText = "\n\(errorResponse.message)"
+            }
+            throw String(localized: "Response Error: \(httpResponse.statusCode), \(errorText)")
+        }
+        
+        return AsyncThrowingStream<String, Error> { continuation in
+            Task(priority: .userInitiated) { [weak self] in
+                guard let self else { return }
+                do {
+                    var reply = ""
+                    for try await line in result.lines {
+                        if line.hasPrefix("data: "),
+                           let data = line.dropFirst(6).data(using: .utf8),
+                           let response = try? self.jsonDecoder.decode(StreamCompletionResponse.self, from: data),
+                           let text = response.choices.first?.delta.content {
+                            reply += text
+                            continuation.yield(text)
+                        }
+                    }
+                    self.appendNewMessage(input: input, reply: reply)
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func sendTaskMessageStream(_ taskPrompt: String, messageText: String? = nil, temperature: Double = 0) async throws -> AsyncThrowingStream<String, Error> {
+        let messages = [
+            Message(role: "system", content: configuration.systemPrompt),
+            Message(role: "user", content: taskPrompt)
+        ]
+        
+        let url = URL(string: Mode.chat.baseURL() + Mode.chat.path)!
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = Mode.chat.method
+        headers.forEach {  urlRequest.setValue($1, forHTTPHeaderField: $0) }
+        let requestModel = Chat(model: configuration.model.rawValue, temperature: temperature,
+                                messages: messages, stream: true)
+        urlRequest.httpBody = try JSONEncoder().encode(requestModel)
         
         let (result, response) = try await urlSession.bytes(for: urlRequest)
         
@@ -166,35 +248,18 @@ class OpenAIService: @unchecked Sendable {
                 guard let self else { return }
                 do {
                     var reply = ""
-                    
-                    switch self.configuration.mode {
-                    case .completions, .edits:
-                        for try await line in result.lines {
-                            if line.hasPrefix("data: "),
-                               let data = line.dropFirst(6).data(using: .utf8),
-                               let response = try? self.jsonDecoder.decode(StreamResponse<TextChoice>.self, from: data),
-                               let text = response.choices.first?.text {
-                                reply += text
-                                continuation.yield(text)
-                            }
+                    for try await line in result.lines {
+                        if line.hasPrefix("data: "),
+                           let data = line.dropFirst(6).data(using: .utf8),
+                           let response = try? self.jsonDecoder.decode(StreamCompletionResponse.self, from: data),
+                           let text = response.choices.first?.delta.content {
+                            reply += text
+                            continuation.yield(text)
                         }
-                    case .chat:
-                        for try await line in result.lines {
-                            if line.hasPrefix("data: "),
-                               let data = line.dropFirst(6).data(using: .utf8),
-                               let response = try? self.jsonDecoder.decode(StreamCompletionResponse.self, from: data),
-                               let text = response.choices.first?.delta.content {
-                                reply += text
-                                continuation.yield(text)
-                            }
-                        }
-                    case .image:
-                        fatalError()
                     }
-                    self.appendNewMessage(input: input, reply: reply)
+                    self.appendNewMessage(input: messageText ?? "", reply: reply)
                     continuation.finish()
                 } catch {
-                    self.appendNewMessage(input: input, reply: "")
                     continuation.finish(throwing: error)
                 }
             }
@@ -207,7 +272,7 @@ class OpenAIService: @unchecked Sendable {
         urlRequest.httpMethod = Mode.chat.method
         headers.forEach {  urlRequest.setValue($1, forHTTPHeaderField: $0) }
         let requestModel = Chat(model: configuration.model.rawValue, temperature: 0,
-                              messages: trimConversation(with: text), stream: false)
+                                messages: trimConversation(with: text), stream: false)
         urlRequest.httpBody = try JSONEncoder().encode(requestModel)
         
         let (data, response) = try await urlSession.data(for: urlRequest)
@@ -229,38 +294,6 @@ class OpenAIService: @unchecked Sendable {
             let reply = completionResponse.choices.first?.message.content ?? ""
             return reply
         } catch {
-            throw error
-        }
-    }
-
-    func sendMessage(_ text: String, appendNewMessage: Bool = true) async throws -> String {
-        let urlRequest = try makeRequest(with: text, stream: false)
-        
-        let (data, response) = try await urlSession.data(for: urlRequest)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw String(localized: "Invalid response")
-        }
-        
-        guard 200...299 ~= httpResponse.statusCode else {
-            var error = String(localized: "Response Error: \(httpResponse.statusCode)")
-            if let errorResponse = try? jsonDecoder.decode(ErrorRootResponse.self, from: data).error {
-                error.append("\n\(errorResponse.message)")
-            }
-            throw error
-        }
-        
-        do {
-            let completionResponse = try jsonDecoder.decode(CompletionResponse.self, from: data)
-            let reply = completionResponse.choices.first?.message.content ?? ""
-            if appendNewMessage {
-                self.appendNewMessage(input: text, reply: reply)
-            }
-            return reply
-        } catch {
-            if appendNewMessage {
-                self.appendNewMessage(input: text, reply: "")
-            }
             throw error
         }
     }
@@ -294,7 +327,7 @@ class OpenAIService: @unchecked Sendable {
         }
     }
     
-    func generateImageStream(_ prompt: String) async throws -> AsyncThrowingStream<String, Error> {
+    func generateImageStream(_ prompt: String, input: String? = nil) async throws -> AsyncThrowingStream<String, Error> {
         return AsyncThrowingStream<String, Error> { continuation in
             Task(priority: .userInitiated) {
                 do {
@@ -306,14 +339,14 @@ class OpenAIService: @unchecked Sendable {
                         image = try await HuggingFaceService.shared.generateImage(prompt)
                     }
                     if image.isEmpty {
+                        self.appendNewMessage(input: input ?? prompt, reply: "")
                         continuation.finish(throwing: String(localized: "Invalid Response"))
                     } else {
                         continuation.yield(image)
                         continuation.finish()
-                        self.appendNewMessage(input: prompt, reply: image)
+                        self.appendNewMessage(input: input ?? prompt, reply: "An image")
                     }
                 } catch {
-                    self.appendNewMessage(input: prompt, reply: "")
                     continuation.finish(throwing: error)
                 }
             }
@@ -354,7 +387,7 @@ extension String: CustomNSError {
     var normalizedPrompts: [String] {
         var result = [String]()
         let pattern = "\\[(.*?)\\]"
-
+        
         do {
             let regex = try NSRegularExpression(pattern: pattern)
             let nsText = self as NSString

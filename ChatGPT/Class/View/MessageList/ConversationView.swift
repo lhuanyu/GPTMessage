@@ -29,26 +29,26 @@ struct ConversationView: View {
     var body: some View {
         VStack {
             message(isSender: true)
-                .padding(.leading, horizontalPadding).padding(.vertical, 10)
+                .padding(.leading, horizontalPadding(for: conversation.inputType)).padding(.vertical, 10)
             if conversation.reply != nil {
                 message()
                     .transition(.move(edge: .leading))
-                    .padding(.trailing, horizontalPadding).padding(.vertical, 10)
+                    .padding(.trailing, horizontalPadding(for: conversation.replyType)).padding(.vertical, 10)
             }
         }
         .transition(.moveAndFade)
         .padding(.horizontal, 15)
     }
     
-    var horizontalPadding: CGFloat {
-        #if os(iOS)
-            55
-        #else
-            105
-        #endif
+    private func horizontalPadding(for type: MessageType) -> CGFloat {
+#if os(iOS)
+        type.isImage ? 105 : 55
+#else
+        type.isImage ? 205 : 105
+#endif
     }
     
-    var showRefreshButton: Bool {
+    private var showRefreshButton: Bool {
         !conversation.isReplying && conversation.isLast
     }
     
@@ -133,32 +133,38 @@ struct ConversationView: View {
             if conversation.isLast {
                 messageEditButton()
                 senderMessageContent
-                    .bubbleStyle(isMyMessage: true)
+                    .frame(minHeight: 24)
+                    .bubbleStyle(isMyMessage: true, type: conversation.inputType)
                     .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
             } else {
                 senderMessageContent
-                    .bubbleStyle(isMyMessage: true)
+                    .frame(minHeight: 24)
+                    .bubbleStyle(isMyMessage: true, type: conversation.inputType)
             }
         }
     }
     
     @ViewBuilder
     var senderMessageContent: some View {
-        if isEditing {
-            TextField("", text: $editingMessage, axis: .vertical)
-                .foregroundColor(.primary)
-                .focused($isFocused)
-                .lineLimit(1...20)
-                .background(.background)
+        if let data = conversation.inputData {
+            ImageDataMessageView(data: data)
         } else {
-            Text(conversation.input)
-                .textSelection(.enabled)
+            if isEditing {
+                TextField("", text: $editingMessage, axis: .vertical)
+                    .foregroundColor(.primary)
+                    .focused($isFocused)
+                    .lineLimit(1...20)
+                    .background(.background)
+            } else {
+                Text(conversation.input)
+                    .textSelection(.enabled)
+            }
         }
     }
     
     @ViewBuilder
     func messageEditButton() -> some View {
-        if conversation.isReplying {
+        if conversation.isReplying || conversation.inputType.isImage {
             EmptyView()
         } else {
             Button {
@@ -206,6 +212,7 @@ struct ConversationView: View {
                         .frame(width: 48, height: 24)
                 }
             }
+            .frame(minHeight: 24)
             .bubbleStyle(isMyMessage: false, type: conversation.replyType)
             retryButton
             Spacer()

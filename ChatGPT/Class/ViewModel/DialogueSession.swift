@@ -96,6 +96,8 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     @Published var bubbleText: String = ""
     @Published var isStreaming: Bool = false
     @Published var input: String = ""
+    @Published var inputData: Data?
+    @Published var sendingData: Data?
     @Published var title: String = "New Chat"
     @Published var conversations: [Conversation] = [] {
         didSet {
@@ -118,10 +120,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     }
         
     var lastMessage: String {
-        if let response = conversations.last?.replyPreview, !response.isEmpty {
-            return response
-        }
-        return conversations.last?.input ?? ""
+        return conversations.last?.preview ?? ""
     }
         
     lazy var service = OpenAIService(configuration: configuration)
@@ -134,9 +133,15 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     
     @MainActor
     func send(scroll: ((UnitPoint) -> Void)? = nil) async {
-        let text = input
-        input = ""
-        await send(text: text, scroll: scroll)
+        if input.isEmpty, let inputData = inputData {
+            sendingData = inputData
+            self.inputData = nil
+            await send(text: "An image", data: sendingData, scroll: scroll)
+        } else {
+            let text = input
+            input = ""
+            await send(text: text, scroll: scroll)
+        }
     }
     
     @MainActor
@@ -152,18 +157,20 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     @MainActor
     func retry(_ conversation: Conversation, scroll: ((UnitPoint) -> Void)? = nil) async {
         removeConversation(conversation)
-        await send(text: conversation.input, scroll: scroll)
+        service.messages.removeLast()
+        await send(text: conversation.input, data: conversation.inputData, isRetry: true, scroll: scroll)
     }
     
     private var lastConversationData: ConversationData?
     
     @MainActor
-    private func send(text: String, scroll: ((UnitPoint) -> Void)? = nil) async {
+    private func send(text: String, data: Data? = nil, isRetry: Bool = false, scroll: ((UnitPoint) -> Void)? = nil) async {
         var streamText = ""
         var conversation = Conversation(
             isReplying: true,
             isLast: true,
             input: text,
+            inputData: data,
             reply: "",
             errorDesc: nil)
         
@@ -171,26 +178,36 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             conversations[conversations.endIndex-1].isLast = false
         }
         
-        withAnimation {
+        if isRetry {
             suggestions.removeAll()
             isReplying = true
             lastConversationData = appendConversation(conversation)
-            scroll?(.bottom)
+        } else {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                suggestions.removeAll()
+                isReplying = true
+                lastConversationData = appendConversation(conversation)
+                scroll?(.bottom)
+            }
         }
-
         
         AudioServicesPlaySystemSound(1004)
         
         do {
             try await Task.sleep(for: .milliseconds(260))
+            isSending = false
+            bubbleText = ""
+            sendingData = nil
 #if os(iOS)
             withAnimation {
+                scroll?(.top)
                 scroll?(.bottom)
             }
 #else
+            scroll?(.top)
             scroll?(.bottom)
 #endif
-            let stream = try await service.sendMessageStream(text)
+            let stream = try await service.sendMessage(text, data: data)
             isStreaming = true
             AudioServicesPlaySystemSound(1301)
             for try await text in stream {
@@ -203,6 +220,7 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
                     scroll?(.bottom)
                 }
 #else
+                scroll?(.top)
                 scroll?(.bottom)/// withAnimation may cause scrollview jitter in macOS
 #endif
             }
@@ -210,13 +228,19 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             isStreaming = false
             createSuggestions(scroll: scroll)
         } catch {
+#if os(iOS)
             withAnimation {
                 conversation.errorDesc = error.localizedDescription
                 lastConversationData?.sync(with: conversation)
                 scroll?(.bottom)
             }
+#else
+            conversation.errorDesc = error.localizedDescription
+            lastConversationData?.sync(with: conversation)
+            scroll?(.bottom)
+#endif
         }
-        
+#if os(iOS)
         withAnimation {
             conversation.isReplying = false
             updateLastConversation(conversation)
@@ -224,6 +248,14 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
             scroll?(.bottom)
             save()
         }
+#else
+        conversation.isReplying = false
+        updateLastConversation(conversation)
+        isReplying = false
+        scroll?(.bottom)
+        save()
+#endif
+
     }
     
     func createSuggestions(scroll: ((UnitPoint) -> Void)? = nil) {
@@ -273,7 +305,15 @@ extension DialogueSession {
             if let id = data.id,
                let input = data.input,
                let date = data.date {
-                let conversation = Conversation(id: id, input: input, reply: data.reply, errorDesc: data.errorDesc, date: date)
+                let conversation = Conversation(
+                    id: id,
+                    input: input,
+                    inputData: data.inputData,
+                    reply: data.reply,
+                    replyData: data.replyData,
+                    errorDesc: data.errorDesc,
+                    date: date
+                )
                 return conversation
             } else {
                 return nil
@@ -284,7 +324,9 @@ extension DialogueSession {
         }
         
         self.conversations.forEach {
-            self.service.appendNewMessage(input: $0.input, reply: $0.reply ?? "")
+            self.service.appendNewMessage(
+                input: $0.inputType.isImage ? "An image" : $0.input,
+                reply: $0.replyType.isImage ? "An image" : $0.reply ?? "")
         }
         if !self.conversations.isEmpty {
             self.conversations[self.conversations.endIndex-1].isLast = true
@@ -379,7 +421,9 @@ extension ConversationData {
         id = conversation.id
         date = conversation.date
         input = conversation.input
+        inputData = conversation.inputData
         reply = conversation.reply
+        replyData = conversation.replyData
         errorDesc = conversation.errorDesc
         do {
             try PersistenceController.shared.save()

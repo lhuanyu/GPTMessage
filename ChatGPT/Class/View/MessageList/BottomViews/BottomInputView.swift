@@ -11,6 +11,7 @@ import SwiftUIX
 struct BottomInputView: View {
     
     @ObservedObject var session: DialogueSession
+    @Binding var isLoading: Bool
     @Environment(\.colorScheme) var colorScheme
 
     let namespace: Namespace.ID
@@ -21,7 +22,7 @@ struct BottomInputView: View {
         
     var body: some View {
         HStack(alignment: .bottom) {
-            LeadingComposerView(defautPrompt: $session.input)
+            LeadingComposerView(session: session, isLoading: $isLoading)
                 .fixedSize()
                 .alignmentGuide(.bottom, computeValue: { d in
                     d[.bottom] - d.height * 0.5 + leadingComposerDelta
@@ -29,16 +30,11 @@ struct BottomInputView: View {
                 .padding([.leading])
             ZStack {
                 ComposerInputView(
-                    input:  $session.input,
+                    session: session,
                     isTextFieldFocused: _isTextFieldFocused,
+                    namespace: namespace,
                     send: send
                 )
-                if session.isSending {
-                    Text("\(session.bubbleText)")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .bubbleStyle(isMyMessage: true)
-                        .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
-                }
             }
         }
 #if os(iOS)
@@ -63,7 +59,7 @@ struct BottomInputView: View {
 #if os(iOS)
         17
 #else
-        12
+        16
 #endif
     }
     

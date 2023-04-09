@@ -12,6 +12,11 @@ enum MessageType {
     case image
     case imageData
     case error
+    
+    
+    var isImage: Bool {
+        self == .image || self == .imageData
+    }
 }
 
 struct Conversation: Identifiable, Codable, Equatable {
@@ -24,17 +29,46 @@ struct Conversation: Identifiable, Codable, Equatable {
     
     var input: String
     
+    var inputData: Data?
+    
     var reply: String?
+    
+    var replyData: Data?
     
     var errorDesc: String?
     
     var date = Date()
     
-    var replyPreview: String? {
+    var preview: String {
+        if let errorDesc = errorDesc {
+            return errorDesc
+        }
+        if reply == nil {
+            return inputPreview
+        }
         if replyType == .image || replyType == .imageData {
             return String(localized: "[Image]")
         }
-        return reply
+        return reply ?? ""
+    }
+    
+    private var inputPreview: String {
+        if inputType == .image || inputType == .imageData {
+            return String(localized: "[Image]")
+        }
+        return input
+    }
+    
+    var inputType: MessageType {
+        if inputData != nil {
+            return .imageData
+        }
+        if input.hasPrefix("![Image]") {
+            return .image
+        } else if input.hasPrefix("![ImageData]") {
+            return .imageData
+        }
+        return .text
     }
     
     var replyType: MessageType {
@@ -67,10 +101,26 @@ struct Conversation: Identifiable, Codable, Equatable {
         guard replyType == .imageData else {
             return nil
         }
+        if let replyData = replyData {
+            return replyData
+        }
         guard let reply = reply else {
             return nil
         }
         let base64 = String(reply.deletingPrefix("![ImageData](data:image/png;base64,").dropLast())
         return Data(base64Encoded: base64)
     }
+}
+
+
+extension String {
+    
+    var base64ImageData: Data? {
+        guard hasPrefix("![ImageData](data:image/png;base64,") else {
+            return nil
+        }
+        let base64 = String(self.deletingPrefix("![ImageData](data:image/png;base64,").dropLast())
+        return Data(base64Encoded: base64)
+    }
+    
 }

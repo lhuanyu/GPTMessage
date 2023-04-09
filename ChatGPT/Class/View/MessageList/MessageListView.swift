@@ -19,6 +19,8 @@ struct MessageListView: View {
     
     @State var isShowClearMessagesAlert = false
     
+    @State var isShowLoadingToast = false
+    
     var body: some View {
         contentView
             .alert(
@@ -184,24 +186,14 @@ struct MessageListView: View {
                     }
                     BottomInputView(
                         session: session,
+                        isLoading: $isShowLoadingToast,
                         namespace: animation,
                         isTextFieldFocused: _isTextFieldFocused
                     ) { _ in
                         sendMessage(proxy)
                     }
-                    .onChange(of: session.conversations.count) { _ in
-                        DispatchQueue.main.asyncAfter(deadline: .now()+0.3) {
-                            session.isSending = false
-                            session.bubbleText = ""
-                        }
-                    }
                 }
                 promptListView()
-            }
-            .onChange(of: session.conversations.last?.errorDesc) { _ in
-                withAnimation {
-                    scrollToBottom(proxy: proxy)
-                }
             }
 #if os(iOS)
             .onReceive(keyboardWillChangePublisher) { value in

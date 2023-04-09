@@ -3,13 +3,13 @@ A SwiftUI app demonstrating how ChatGPT interacts with DALL·E and HuggingFace m
 
 This is what the app looks like on iOS:
 <p float="left">
-  <img src="screenshot.jpg" width="350" />
-  <img src="screenshot1.jpg" width="350" /> 
+  <img src="screenshot.jpg" width="400" />
+  <img src="screenshot1.jpg" width="400" /> 
 </p>
 
 And macOS:
 <p float="left">
-  <img src="screenshot_macOS.jpg" width="900"/>
+  <img src="screenshot_macOS.jpg" width="800"/>
 </p>
 
 ## Feautures
@@ -26,6 +26,19 @@ To start drawing, simply send a message beginning with "Draw". For example, you 
 
 Hugging Face's Inference API is the preferred option since it's free(but slow). You can easily switch to DALL·E in the settings.
 
+### Image Caption
+
+By connecting ChatGPT with an Image Caption model such as [nlpconnect/vit-gpt2-image-captioning](https://huggingface.co/nlpconnect/vit-gpt2-image-captioning) from Hugging Face, we can easily integrate the image captioning task with the image generation task.
+
+<p float="left">
+  <img src="screenshot_macOS_image_caption.jpg" width="800"/>
+</p>
+
+<p float="left">
+  <img src="screenshot_image_caption.jpg" width="400" />
+  <img src="screenshot_image_caption1.jpg" width="400" />
+</p>
+
 ## Prompts
 
 Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)**.
@@ -40,12 +53,22 @@ Type '/' to show the prompts list.
 
 ## Usage
 
-Set your OpenAI API key in the AppConfiguration.
+Set your OpenAI API key in the `AppConfiguration`.
 
 ```swift
 class AppConfiguration: ObservableObject {
         
     @AppStorage("configuration.key") var key = "OpenAI API Key"
+    
+}
+```
+
+Set your Hugging Face User Access Token in the `HuggingFaceConfiguration`.
+
+```swift
+class HuggingFaceConfiguration: ObservableObject {
+        
+    @AppStorage("huggingFace.key") var key: String = ""
     
 }
 ```

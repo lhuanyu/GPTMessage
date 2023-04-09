@@ -20,8 +20,7 @@ struct ImageMessageView: View {
                 ProgressView()
             }
             .cacheOriginalImage()
-            .frame(maxWidth: 512, maxHeight: 512)
-            .aspectRatio(.init(width: 1, height: 1), contentMode: .fit)
+            .aspectRatio(contentMode: .fit)
     }
 }
 

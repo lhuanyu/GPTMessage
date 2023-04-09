@@ -19,6 +19,8 @@
 		E4924F0829DEEC0800B69605 /* ErrorMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0729DEEC0800B69605 /* ErrorMessageView.swift */; };
 		E4924F0A29DEF35200B69605 /* HuggingFaceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0929DEF35200B69605 /* HuggingFaceSettingsView.swift */; };
 		E4924F0C29DF2AD800B69605 /* OpenAISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0B29DF2AD800B69605 /* OpenAISettingsView.swift */; };
+		E4924F0E29E0083300B69605 /* ImageClassification .swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0D29E0083300B69605 /* ImageClassification .swift */; };
+		E4924F1529E14B3000B69605 /* ObjectDetection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F1429E14B3000B69605 /* ObjectDetection.swift */; };
 		E4994DEB29D6E655002981D0 /* CustomPromptsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */; };
 		E4994DED29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */; };
 		E4994DF229DA8B29002981D0 /* MacOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */; };
@@ -91,6 +93,8 @@
 		E4924F0729DEEC0800B69605 /* ErrorMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorMessageView.swift; sourceTree = "<group>"; };
 		E4924F0929DEF35200B69605 /* HuggingFaceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuggingFaceSettingsView.swift; sourceTree = "<group>"; };
 		E4924F0B29DF2AD800B69605 /* OpenAISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAISettingsView.swift; sourceTree = "<group>"; };
+		E4924F0D29E0083300B69605 /* ImageClassification .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageClassification .swift"; sourceTree = "<group>"; };
+		E4924F1429E14B3000B69605 /* ObjectDetection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectDetection.swift; sourceTree = "<group>"; };
 		E4994DEA29D6E655002981D0 /* CustomPromptsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPromptsView.swift; sourceTree = "<group>"; };
 		E4994DEC29D9C923002981D0 /* ScrollViewDidScrollViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewDidScrollViewModifier.swift; sourceTree = "<group>"; };
 		E4994DF129DA8B29002981D0 /* MacOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOSSettingsView.swift; sourceTree = "<group>"; };
@@ -170,6 +174,8 @@
 				E4924EF729DE714600B69605 /* HuggingFace.swift */,
 				E4924EF529DE702400B69605 /* HuggingFaceService.swift */,
 				E4924EFD29DEDA2000B69605 /* Text2Image.swift */,
+				E4924F0D29E0083300B69605 /* ImageClassification .swift */,
+				E4924F1429E14B3000B69605 /* ObjectDetection.swift */,
 			);
 			path = HuggingFace;
 			sourceTree = "<group>";
@@ -552,6 +558,7 @@
 				E4924F0C29DF2AD800B69605 /* OpenAISettingsView.swift in Sources */,
 				E4924F0629DEE8E900B69605 /* TextMessageView.swift in Sources */,
 				E4C65EFC29CA9F7800AFA884 /* OpenAIService.swift in Sources */,
+				E4924F1529E14B3000B69605 /* ObjectDetection.swift in Sources */,
 				E4C65EF229CA9F7800AFA884 /* MessageBubble.swift in Sources */,
 				E4C65EA429CA9E7E00AFA884 /* Persistence.swift in Sources */,
 				E4924EF629DE702400B69605 /* HuggingFaceService.swift in Sources */,
@@ -560,6 +567,7 @@
 				E4924F0829DEEC0800B69605 /* ErrorMessageView.swift in Sources */,
 				E4C65EFA29CA9F7800AFA884 /* LanguageModels.swift in Sources */,
 				E4924F0229DEE8CB00B69605 /* ImageMessageView.swift in Sources */,
+				E4924F0E29E0083300B69605 /* ImageClassification .swift in Sources */,
 				E4C65EF029CA9F7800AFA884 /* ConversationView.swift in Sources */,
 				E4C65EF429CA9F7800AFA884 /* LeadingComposerView.swift in Sources */,
 			);

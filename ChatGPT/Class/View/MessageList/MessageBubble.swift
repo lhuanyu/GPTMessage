@@ -15,7 +15,7 @@ struct BubbleShape: Shape {
         let width = rect.width
         let height = rect.height
         
-        #if os(macOS)
+#if os(macOS)
         let bezierPath = NSBezierPath()
         if !myMessage {
             bezierPath.move(to: CGPoint(x: 20, y: height))
@@ -45,7 +45,7 @@ struct BubbleShape: Shape {
             bezierPath.curve(to: CGPoint(x: width - 20, y: height), controlPoint1: CGPoint(x: width - 15, y: height), controlPoint2: CGPoint(x: width - 20, y: height))
         }
         return Path(bezierPath.cgPath)
-        #else
+#else
         let bezierPath = UIBezierPath()
         if !myMessage {
             bezierPath.move(to: CGPoint(x: 20, y: height))
@@ -75,14 +75,14 @@ struct BubbleShape: Shape {
             bezierPath.addCurve(to: CGPoint(x: width - 20, y: height), controlPoint1: CGPoint(x: width - 15, y: height), controlPoint2: CGPoint(x: width - 20, y: height))
         }
         return Path(bezierPath.cgPath)
-        #endif
-
+#endif
+        
     }
 }
 
 #if os(macOS)
 extension NSBezierPath {
-
+    
     var cgPath: CGPath {
         let path = CGMutablePath()
         var points = [CGPoint](repeating: .zero, count: 3)
@@ -120,54 +120,44 @@ struct Bubble: ViewModifier {
             if isMyMessage {
                 content
                     .padding([.leading, .trailing])
-    #if os(macOS)
-                    .padding(.vertical, 8)
-                    .background(Color(NSColor.systemBlue))
-    #else
-                    .padding(.vertical, 6)
-                    .background(Color(UIColor.systemBlue))
+                    .padding(.vertical, 4)
+                    .background(Color(.systemBlue))
+#if os(iOS)
                     .contentShape(.contextMenuPreview, BubbleShape(myMessage: true))
-    #endif
+#endif
                     .clipShape(BubbleShape(myMessage: true))
                     .foregroundColor(.white)
             } else {
                 content
                     .padding([.leading, .trailing])
-    #if os(macOS)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, 4)
                     .background(replyBackgroundColor)
-    #else
-                    .padding(.vertical, 6)
-                    .background(replyBackgroundColor)
+#if os(iOS)
                     .contentShape(.contextMenuPreview, BubbleShape(myMessage: false))
-    #endif
+#endif
                     .clipShape(BubbleShape(myMessage: false))
                     .foregroundColor(.primary)
             }
         case .image, .imageData:
             if isMyMessage {
                 content
-    #if os(macOS)
-                    .background(Color(NSColor.systemBlue))
-    #else
-                    .background(Color(UIColor.systemBlue))
+                    .background(.clear)
+#if os(iOS)
                     .contentShape(.contextMenuPreview, BubbleShape(myMessage: true))
-    #endif
+#endif
                     .clipShape(BubbleShape(myMessage: true))
                     .foregroundColor(.white)
             } else {
                 content
-    #if os(macOS)
                     .background(replyBackgroundColor)
-    #else
-                    .background(replyBackgroundColor)
+#if os(iOS)
                     .contentShape(.contextMenuPreview, BubbleShape(myMessage: false))
-    #endif
+#endif
                     .clipShape(BubbleShape(myMessage: false))
                     .foregroundColor(.primary)
             }
         }
-
+        
     }
     
     private var replyBackgroundColor: Color {
@@ -188,15 +178,15 @@ struct MessageBubble_Previews: PreviewProvider {
                     .bubbleStyle(isMyMessage: true)
             }
             .padding(.leading, 55).padding(.vertical, 10)
-
+            
             HStack {
                 Spacer()
                 Text("Here’s to the crazy ones, the misfits, the rebels, the troublemakers, the round pegs in the square holes… the ones who see things differently — they’re not fond of rules…")
                     .bubbleStyle(isMyMessage: true)
             }
             .padding(.leading, 55).padding(.vertical, 10)
-
-
+            
+            
             
             HStack {
                 Text("You can quote them, disagree with them, glorify or vilify them, but the only thing you can’t do is ignore them because they change things…")
@@ -211,8 +201,8 @@ struct MessageBubble_Previews: PreviewProvider {
                 Spacer()
             }
             .padding(.trailing, 55).padding(.vertical, 10)
-
-
+            
+            
         }.padding(.horizontal, 15)
     }
 }

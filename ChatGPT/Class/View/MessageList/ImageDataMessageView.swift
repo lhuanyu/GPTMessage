@@ -15,8 +15,7 @@ struct ImageDataMessageView: View {
         if let data = data {
             Image(data: data)?
                 .resizable()
-                .frame(maxWidth: 512, maxHeight: 512)
-                .aspectRatio(.init(width: 1, height: 1), contentMode: .fit)
+                .sizeToFit()
         } else {
             EmptyView()
         }

@@ -20,18 +20,31 @@ class HuggingFaceConfiguration: ObservableObject {
 enum HuggingFaceAPI {
 
     case text2Image(HuggingFaceModel)
+    case imageClassification(HuggingFaceModel)
+    case imageCaption
     
     var headers: [String: String] {
-        [
-            "Authorization": "Bearer \(HuggingFaceConfiguration.shared.key)",
-            "Content-Type" : "application/x-www-form-urlencoded"
-        ]
+        switch self {
+        case .imageClassification, .text2Image:
+            return  [
+                "Authorization": "Bearer \(HuggingFaceConfiguration.shared.key)",
+            ]
+        case .imageCaption:
+            return  [
+                "Content-Type" : "application/json"
+            ]
+        }
+
     }
     
     var path: String {
         switch self {
         case .text2Image(let huggingFaceModel):
             return huggingFaceModel.path
+        case .imageClassification(let huggingFaceModel):
+            return huggingFaceModel.path
+        case .imageCaption:
+            return "/run/predict"
         }
     }
     
@@ -40,7 +53,12 @@ enum HuggingFaceAPI {
     }
     
     func baseURL() -> String {
-        return "https://api-inference.huggingface.co/models"
+        switch self {
+        case .imageClassification, .text2Image:
+            return "https://api-inference.huggingface.co/models"
+        case .imageCaption:
+            return "https://lhuanyu-nlpconnect-vit-gpt2-image-captioning.hf.space"
+        }
     }
     
 }
