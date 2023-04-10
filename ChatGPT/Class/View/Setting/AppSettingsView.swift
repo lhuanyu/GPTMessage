@@ -42,7 +42,7 @@ class AppConfiguration: ObservableObject {
     
     @AppStorage("configuration.isMarkdownEnabled") var isMarkdownEnabled: Bool = false
         
-    @AppStorage("configuration.preferredText2ImageService") var preferredText2ImageService: AIService = .huggingFace
+    @AppStorage("configuration.preferredText2ImageService") var preferredText2ImageService: AIService = .openAI
 
 }
 
