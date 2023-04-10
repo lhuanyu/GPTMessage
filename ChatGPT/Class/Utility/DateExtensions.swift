@@ -59,6 +59,17 @@ extension Date {
         return dateFormatter.string(from: self)
     }
     
+    var iMessageDateTimeString: String {
+        if isInToday {
+            return String(localized: "Today") + " " + timeString(ofStyle: .short)
+        } else if isInYesterday {
+            return String(localized: "Yesterday") + " " + timeString(ofStyle: .short)
+        }
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .medium
+        return dateFormatter.string(from: self)
+    }
     
     /// SwifterSwift: Time string from date
     ///

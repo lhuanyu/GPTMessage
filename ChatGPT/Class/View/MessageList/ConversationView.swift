@@ -19,6 +19,7 @@ struct ConversationView: View {
         
     let conversation: Conversation
     let namespace: Namespace.ID
+    var lastConversationDate: Date?
     let retryHandler: (Conversation) -> Void
     
     @State var isEditing = false
@@ -27,13 +28,16 @@ struct ConversationView: View {
     var deleteHandler: (() -> Void)?
 
     var body: some View {
-        VStack {
-            message(isSender: true)
-                .padding(.leading, horizontalPadding(for: conversation.inputType)).padding(.vertical, 10)
-            if conversation.reply != nil {
-                message()
-                    .transition(.move(edge: .leading))
-                    .padding(.trailing, horizontalPadding(for: conversation.replyType)).padding(.vertical, 10)
+        VStack(spacing: 0) {
+            dateView
+            VStack {
+                message(isSender: true)
+                    .padding(.leading, horizontalPadding(for: conversation.inputType)).padding(.vertical, 10)
+                if conversation.reply != nil {
+                    message()
+                        .transition(.move(edge: .leading))
+                        .padding(.trailing, horizontalPadding(for: conversation.replyType)).padding(.vertical, 10)
+                }
             }
         }
         .transition(.moveAndFade)
@@ -48,6 +52,25 @@ struct ConversationView: View {
 #endif
     }
     
+    var dateView: some View {
+        HStack {
+            Spacer()
+            if let lastConversationDate = lastConversationDate {
+                if conversation.date.timeIntervalSince(lastConversationDate) > 60  {
+                    Text(conversation.date.iMessageDateTimeString)
+                        .font(.footnote)
+                        .foregroundColor(.secondaryLabel)
+                }
+            } else {
+                Text(conversation.date.iMessageDateTimeString)
+                    .font(.footnote)
+                    .foregroundColor(.secondaryLabel)
+            }
+            Spacer()
+        }
+        .padding(.top, 10)
+    }
+    
     private var showRefreshButton: Bool {
         !conversation.isReplying && conversation.isLast
     }
@@ -58,7 +81,11 @@ struct ConversationView: View {
             senderMessage
                 .contextMenu {
                     Button {
-                        conversation.input.copyToPasteboard()
+                        if let data = conversation.inputData {
+                           KFCrossPlatformImage(data: data)?.copyToPasteboard()
+                        } else {
+                            conversation.input.copyToPasteboard()
+                        }
                     } label: {
                         HStack {
                             Image(systemName: "doc.on.doc")
@@ -186,6 +213,7 @@ struct ConversationView: View {
                     Image(systemName: "pencil")
                 }
             }
+            .keyboardShortcut(isEditing ? .defaultAction : .none)
             .frame(width: 30)
             .padding(.trailing)
             .padding(.leading, -50)

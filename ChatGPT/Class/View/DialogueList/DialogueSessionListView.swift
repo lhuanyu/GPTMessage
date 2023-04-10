@@ -166,7 +166,7 @@ extension Date {
     
     var dialogueDesc: String {
         if self.isInYesterday {
-            return "Yesterday"
+            return String(localized: "Yesterday")
         }
         if self.isInToday {
             return timeString(ofStyle: .short)

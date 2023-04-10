@@ -111,7 +111,8 @@ struct MessageListView: View {
                                 ForEach(enumerating: Array(session.conversations.enumerated())) { index, conversation in
                                     ConversationView(
                                         conversation: conversation,
-                                        namespace: animation
+                                        namespace: animation,
+                                        lastConversationDate: (index > 0 ? session.conversations[index-1].date : nil)
                                     ) { conversation in
                                         Task { @MainActor in
                                             await session.retry(conversation, scroll: {
@@ -262,6 +263,17 @@ struct MessageListView: View {
                 #else
                 filterPrompts()
                 #endif
+            }
+            .onChange(of: session.inputData) { data in
+                if let _ = data {
+#if os(iOS)
+                    withAnimation(after: .milliseconds(100)) {
+                        scrollToBottom(proxy: proxy)
+                    }
+#else
+
+#endif
+                }
             }
         }
     }
