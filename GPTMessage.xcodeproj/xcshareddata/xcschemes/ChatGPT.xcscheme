@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4C65E9D29CA9E7E00AFA884"
-               BuildableName = "ChatGPT.app"
-               BlueprintName = "ChatGPT"
-               ReferencedContainer = "container:ChatGPT.xcodeproj">
+               BuildableName = "GPTMessage.app"
+               BlueprintName = "GPTMessage"
+               ReferencedContainer = "container:GPTMessage.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,9 +35,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4C65EB329CA9E8000AFA884"
-               BuildableName = "ChatGPTTests.xctest"
-               BlueprintName = "ChatGPTTests"
-               ReferencedContainer = "container:ChatGPT.xcodeproj">
+               BuildableName = "GPTMessageTests.xctest"
+               BlueprintName = "GPTMessageTests"
+               ReferencedContainer = "container:GPTMessage.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -46,9 +46,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4C65EBD29CA9E8000AFA884"
-               BuildableName = "ChatGPTUITests.xctest"
-               BlueprintName = "ChatGPTUITests"
-               ReferencedContainer = "container:ChatGPT.xcodeproj">
+               BuildableName = "GPTMessageUITests.xctest"
+               BlueprintName = "GPTMessageUITests"
+               ReferencedContainer = "container:GPTMessage.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -68,9 +68,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4C65E9D29CA9E7E00AFA884"
-            BuildableName = "ChatGPT.app"
-            BlueprintName = "ChatGPT"
-            ReferencedContainer = "container:ChatGPT.xcodeproj">
+            BuildableName = "GPTMessage.app"
+            BlueprintName = "GPTMessage"
+            ReferencedContainer = "container:GPTMessage.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4C65E9D29CA9E7E00AFA884"
-            BuildableName = "ChatGPT.app"
-            BlueprintName = "ChatGPT"
-            ReferencedContainer = "container:ChatGPT.xcodeproj">
+            BuildableName = "GPTMessage.app"
+            BlueprintName = "GPTMessage"
+            ReferencedContainer = "container:GPTMessage.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

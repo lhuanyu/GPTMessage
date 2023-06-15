@@ -34,9 +34,9 @@ class AppConfiguration: ObservableObject {
     
     @AppStorage("configuration.isReplySuggestionsEnabled") var isReplySuggestionsEnabled = true
     
-    @AppStorage("configuration.isSmartModeEnabled") var isSmartModeEnabled = true
+    @AppStorage("configuration.isSmartModeEnabled") var isSmartModeEnabled = false
     
-    @AppStorage("configuration.temperature") var temperature: Double = 0.5
+    @AppStorage("configuration.temperature") var temperature: Double = 0.8
     
     @AppStorage("configuration.systemPrompt") var systemPrompt: String = "You are a helpful assistant"
     

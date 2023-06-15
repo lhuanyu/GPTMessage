@@ -175,6 +175,7 @@ struct ConversationView: View {
     var senderMessageContent: some View {
         if let data = conversation.inputData {
             ImageDataMessageView(data: data)
+                .maxWidth(256)
         } else {
             if isEditing {
                 TextField("", text: $editingMessage, axis: .vertical)
@@ -228,8 +229,10 @@ struct ConversationView: View {
                     TextMessageView(text: conversation.reply ?? "", isReplying: conversation.isReplying)
                 case .image:
                     ImageMessageView(url: conversation.replyImageURL)
+                        .maxWidth(256)
                 case .imageData:
                     ImageDataMessageView(data: conversation.replyImageData)
+                        .maxWidth(256)
                 case .error:
                     ErrorMessageView(error: conversation.errorDesc) {
                         retryHandler(conversation)
