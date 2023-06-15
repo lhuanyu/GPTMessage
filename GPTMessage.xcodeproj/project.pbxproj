@@ -135,6 +135,7 @@
 		E4E99BC629D415FF00C0FCBD /* DialogueListPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueListPlaceholderView.swift; sourceTree = "<group>"; };
 		E4E99BC829D5AF9F00C0FCBD /* ToolTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipView.swift; sourceTree = "<group>"; };
 		E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptsListView.swift; sourceTree = "<group>"; };
+		E4EF056C2A3B3744005CF741 /* GPTMessage-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GPTMessage-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +208,7 @@
 		E4C65E9529CA9E7E00AFA884 = {
 			isa = PBXGroup;
 			children = (
+				E4EF056C2A3B3744005CF741 /* GPTMessage-Info.plist */,
 				E4C65EA029CA9E7E00AFA884 /* ChatGPT */,
 				E4C65EB729CA9E8000AFA884 /* ChatGPTTests */,
 				E4C65EC129CA9E8000AFA884 /* ChatGPTUITests */,
@@ -749,6 +751,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GPTMessage-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GPTMessage;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -790,6 +793,7 @@
 				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GPTMessage-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = GPTMessage;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
