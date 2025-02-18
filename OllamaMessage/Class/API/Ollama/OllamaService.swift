@@ -88,6 +88,8 @@ class OllamaService: @unchecked Sendable {
                                 continuation.yield(response.message.content)
                             } else if let finalResponse = try? decoder.decode(OllamaFinalResponse.self, from: Data(line.utf8)) {
                                 print("Final response: \(finalResponse)")
+                            } else {
+                                continuation.finish(throwing: URLError(.badServerResponse, userInfo: [NSLocalizedDescriptionKey: line]))
                             }
                         }
                         appendNewMessage(input: input, reply: responseContent)
