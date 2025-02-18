@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		E44349152D5F3A6A00A8D232 /* OllamaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44349142D5F3A6A00A8D232 /* OllamaSettingsView.swift */; };
-		E4924EED29DB0A4400B69605 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E4924EEF29DB0A4400B69605 /* Localizable.strings */; };
 		E4924EF429DC309E00B69605 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = E4924EF329DC309E00B69605 /* Kingfisher */; };
 		E4924F0229DEE8CB00B69605 /* ImageMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0129DEE8CB00B69605 /* ImageMessageView.swift */; };
 		E4924F0429DEE8DD00B69605 /* ImageDataMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4924F0329DEE8DD00B69605 /* ImageDataMessageView.swift */; };
@@ -56,6 +55,7 @@
 		E4E99BC929D5AF9F00C0FCBD /* ToolTipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BC829D5AF9F00C0FCBD /* ToolTipView.swift */; };
 		E4E99BCC29D5D58700C0FCBD /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = E4E99BCB29D5D58700C0FCBD /* SwiftCSV */; };
 		E4E99BD029D681A000C0FCBD /* PromptsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */; };
+		E4F464E92D65550D001F2481 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E4F464E82D65550D001F2481 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,7 +77,6 @@
 
 /* Begin PBXFileReference section */
 		E44349142D5F3A6A00A8D232 /* OllamaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamaSettingsView.swift; sourceTree = "<group>"; };
-		E4924EEE29DB0A4400B69605 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		E4924F0129DEE8CB00B69605 /* ImageMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMessageView.swift; sourceTree = "<group>"; };
 		E4924F0329DEE8DD00B69605 /* ImageDataMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDataMessageView.swift; sourceTree = "<group>"; };
 		E4924F0529DEE8E900B69605 /* TextMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextMessageView.swift; sourceTree = "<group>"; };
@@ -124,6 +123,7 @@
 		E4E99BC829D5AF9F00C0FCBD /* ToolTipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolTipView.swift; sourceTree = "<group>"; };
 		E4E99BCF29D681A000C0FCBD /* PromptsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptsListView.swift; sourceTree = "<group>"; };
 		E4EF056C2A3B3744005CF741 /* OllamaMessage-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OllamaMessage-Info.plist"; sourceTree = "<group>"; };
+		E4F464E82D65550D001F2481 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,7 +310,7 @@
 			isa = PBXGroup;
 			children = (
 				E4C65EE929CA9F7800AFA884 /* chatgpt_prompts.json */,
-				E4924EEF29DB0A4400B69605 /* Localizable.strings */,
+				E4F464E82D65550D001F2481 /* Localizable.xcstrings */,
 				E4C65EAA29CA9E7F00AFA884 /* Assets.xcassets */,
 			);
 			path = Resource;
@@ -477,7 +477,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4C65EFD29CA9F7800AFA884 /* chatgpt_prompts.json in Resources */,
-				E4924EED29DB0A4400B69605 /* Localizable.strings in Resources */,
+				E4F464E92D65550D001F2481 /* Localizable.xcstrings in Resources */,
 				E4C65EAF29CA9E7F00AFA884 /* Preview Assets.xcassets in Resources */,
 				E4C65EAB29CA9E7F00AFA884 /* Assets.xcassets in Resources */,
 			);
@@ -575,17 +575,6 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		E4924EEF29DB0A4400B69605 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E4924EEE29DB0A4400B69605 /* zh-Hans */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		E4C65EC629CA9E8000AFA884 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -640,11 +629,13 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -696,10 +687,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
