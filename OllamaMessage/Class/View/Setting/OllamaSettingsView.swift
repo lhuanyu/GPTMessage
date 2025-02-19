@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 class OllamaConfiguration: ObservableObject {
     static let shared = OllamaConfiguration()
@@ -15,6 +16,7 @@ class OllamaConfiguration: ObservableObject {
     @Published var models: [OllamaModel] = []
     @Published var version: String = ""
     
+    @MainActor
     func fetchModels() async {
         guard let url = URL(string: apiHost + "/api/tags") else {
             return
@@ -59,6 +61,9 @@ struct OllamaSettingsView: View {
                 } else {
                     ForEach(models) { model in
                         HStack {
+                            KFImage.url(model.name.ollamaModelProvider.iconURL)
+                                .resizable()
+                                .frame(width: 24, height: 24)
                             Text(model.name + "(\(model.details.parameterSize))")
                             Spacer()
                             if model.name == modelName {

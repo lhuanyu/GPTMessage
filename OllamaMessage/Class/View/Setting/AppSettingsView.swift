@@ -77,6 +77,7 @@ struct AppSettingsView: View {
                     HStack {
                         Image("ollama")
                             .resizable()
+                            .renderingMode(.template)
                             .frame(width: 30, height: 30)
                         Text("Ollama")
                     }

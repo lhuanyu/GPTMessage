@@ -9,16 +9,17 @@ import SwiftUI
 
 struct TextMessageView: View {
     
+    var think: String?
     var text: String
     var isReplying: Bool
     
     var body: some View {
-        if text.isEmpty {
-            EmptyView()
+        if AppConfiguration.shared.isMarkdownEnabled {
+            MessageMarkdownView(think: think, text: text)
+                .textSelection(.enabled)
         } else {
-            if AppConfiguration.shared.isMarkdownEnabled {
-                MessageMarkdownView(text: text)
-                    .textSelection(.enabled)
+            if text.isEmpty {
+                EmptyView()
             } else {
                 Text(text)
                     .textSelection(.enabled)

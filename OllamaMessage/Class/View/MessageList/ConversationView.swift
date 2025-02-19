@@ -5,18 +5,15 @@
 //  Created by LuoHuanyu on 2023/3/3.
 //
 
+import Kingfisher
 import SwiftUI
 import SwiftUIX
-import Kingfisher
 
-struct AnimationID {
-    
+enum AnimationID {
     static let senderBubble = "SenderBubble"
-    
 }
 
 struct ConversationView: View {
-        
     let conversation: Conversation
     let namespace: Namespace.ID
     var lastConversationDate: Date?
@@ -56,7 +53,7 @@ struct ConversationView: View {
         HStack {
             Spacer()
             if let lastConversationDate = lastConversationDate {
-                if conversation.date.timeIntervalSince(lastConversationDate) > 60  {
+                if conversation.date.timeIntervalSince(lastConversationDate) > 60 {
                     Text(conversation.date.iMessageDateTimeString)
                         .font(.footnote)
                         .foregroundColor(.secondaryLabel)
@@ -82,7 +79,7 @@ struct ConversationView: View {
                 .contextMenu {
                     Button {
                         if let data = conversation.inputData {
-                           KFCrossPlatformImage(data: data)?.copyToPasteboard()
+                            KFCrossPlatformImage(data: data)?.copyToPasteboard()
                         } else {
                             conversation.input.copyToPasteboard()
                         }
@@ -181,7 +178,7 @@ struct ConversationView: View {
                 TextField("", text: $editingMessage, axis: .vertical)
                     .foregroundColor(.primary)
                     .focused($isFocused)
-                    .lineLimit(1...20)
+                    .lineLimit(1 ... 20)
                     .background(.background)
             } else {
                 Text(conversation.input)
@@ -226,7 +223,30 @@ struct ConversationView: View {
             VStack(alignment: .leading) {
                 switch conversation.replyType {
                 case .text:
-                    TextMessageView(text: conversation.reply ?? "", isReplying: conversation.isReplying)
+                    if let reply = conversation.reply {
+                        let components = reply.components(separatedBy: "</think>")
+                        if components.count > 1,
+                           let think = components.first?.trimmingPrefix("<think>").trimmingCharacters(in: .whitespacesAndNewlines),
+                           let text = components.last
+                        {
+                            TextMessageView(
+                                think: String(think),
+                                text: text,
+                                isReplying: conversation.isReplying
+                            )
+                        } else if reply.hasPrefix("<think>") {
+                            let think = reply.trimmingPrefix("<think>").trimmingCharacters(in: .whitespacesAndNewlines)
+                            TextMessageView(
+                                think: String(think),
+                                text: "",
+                                isReplying: conversation.isReplying
+                            )
+                        } else {
+                            TextMessageView(text: reply, isReplying: conversation.isReplying)
+                        }
+                    } else {
+                        TextMessageView(text: "", isReplying: conversation.isReplying)
+                    }
                 case .image:
                     ImageMessageView(url: conversation.replyImageURL)
                         .maxWidth(256)
@@ -267,7 +287,6 @@ struct ConversationView: View {
             }
         }
     }
-    
 }
 
 extension String {
@@ -296,13 +315,11 @@ extension AnyTransition {
     static var moveAndFade: AnyTransition {
         .asymmetric(
             insertion: .move(edge: .bottom),
-            removal: .move(edge: .top).combined(with: .opacity)
-        )
+            removal: .move(edge: .top).combined(with: .opacity))
     }
 }
 
 struct MessageRowView_Previews: PreviewProvider {
-    
     static let message = Conversation(
         isReplying: true, isLast: false,
         input: "What is SwiftUI?",
@@ -325,21 +342,21 @@ struct MessageRowView_Previews: PreviewProvider {
         reply: "SwiftUI is a user interface framework that allows developers to design and develop user interfaces for iOS, macOS, watchOS, and tvOS applications using Swift, a programming language developed by Apple Inc.",
         errorDesc: nil)
     
-    @Namespace static  var animation
+    @Namespace static var animation
     
     static var previews: some View {
         NavigationStack {
             ScrollView {
-                ConversationView(conversation: message, namespace: animation,  retryHandler: { message in
+                ConversationView(conversation: message, namespace: animation, retryHandler: { _ in
                     
                 })
-                ConversationView(conversation: message2, namespace: animation,  retryHandler: { message in
+                ConversationView(conversation: message2, namespace: animation, retryHandler: { _ in
                     
                 })
-                ConversationView(conversation: message3, namespace: animation,  retryHandler: { message in
+                ConversationView(conversation: message3, namespace: animation, retryHandler: { _ in
                     
                 })
-                ConversationView(conversation: message4, namespace: animation,  retryHandler: { message in
+                ConversationView(conversation: message4, namespace: animation, retryHandler: { _ in
                     
                 })
             }

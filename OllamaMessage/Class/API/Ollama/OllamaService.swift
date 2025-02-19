@@ -34,7 +34,7 @@ class OllamaService: @unchecked Sendable {
         let prompt = """
         Generate \(suggestionsCount) suggestions for user input based on the conversation below: \n\(chatHistory)\n The suggestions should use the same language as the main language of the conversation. The suggestions should be short and unique. Return the suggestions only in an array format, such as: ["suggestion1", "suggestion2", "suggestion3"], do not use markdown syntax. You must return \(suggestionsCount) suggestions.
         """
-        let suggestions = try await chat(prompt, includingHistory: false)
+        let suggestions = try await chat(prompt, model: "qwen2:latest", includingHistory: false)
         print("Suggestions: \(suggestions)")
         return suggestions.normalizedPrompts
     }
@@ -108,10 +108,10 @@ class OllamaService: @unchecked Sendable {
     }
     
     /// no stream
-    func chat(_ input: String, includingHistory: Bool = false) async throws -> String {
+    func chat(_ input: String, model: String? = nil, messages: [Message] = [], includingHistory: Bool = false) async throws -> String {
         do {
             let chatRequest = OllamaChatRequest(
-                model: configuration.model,
+                model: model ?? configuration.model,
                 messages: includingHistory ? messages + [Message(role: "user", content: input)] : [Message(role: "user", content: input)],
                 stream: false
             )
