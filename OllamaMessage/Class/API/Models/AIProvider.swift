@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 
 enum OllamaModelProvider: String {
     case qwen
@@ -22,16 +21,20 @@ enum OllamaModelProvider: String {
         case .unknown:
             return nil
         default:
-            return URL(string: "https://unpkg.com/@lobehub/icons-static-png@latest/light/\(rawValue)-color.png")
+            return URL(string: "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/\(rawValue)-color.png")
         }
     }
 }
+
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+import UIKit
 
 extension UIUserInterfaceStyle {
     var styleName: String {
         return self == .dark ? "dark" : "light"
     }
 }
+#endif
 
 extension String {
     var ollamaModelProvider: OllamaModelProvider {

@@ -75,6 +75,7 @@ class OllamaService: @unchecked Sendable {
             
             let encoder = JSONEncoder()
             request.httpBody = try encoder.encode(chatRequest)
+            request.timeoutInterval = 60 * 5
             
             let (bytes, _) = try await URLSession.shared.bytes(for: request)
             

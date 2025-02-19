@@ -82,7 +82,7 @@ struct DialogueSessionListView: View {
 #else
                 NavigationLink(value: session) {
                     HStack {
-                        Image("openai")
+                        KFImage.url(session.configuration.model.ollamaModelProvider.iconURL)
                             .resizable()
                             .frame(width: 40, height: 40)
                             .cornerRadius(20)
