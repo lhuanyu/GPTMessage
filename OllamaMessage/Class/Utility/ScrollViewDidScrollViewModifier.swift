@@ -30,7 +30,7 @@ struct ScrollViewDidScrollViewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .introspectScrollView { scrollView in
+            .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
                 if viewModel.contentOffsetSubscription == nil {
                     viewModel.subscribe(scrollView: scrollView)
                 }

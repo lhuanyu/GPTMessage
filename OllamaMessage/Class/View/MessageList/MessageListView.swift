@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftUIX
-import Introspect
+import SwiftUIIntrospect
 
 struct MessageListView: View {
     
@@ -177,9 +177,9 @@ struct MessageListView: View {
                                 scrollViewMaxY = value
                             }
                         }
-                        .introspectScrollView(customize: { view in
-                            view.clipsToBounds = false
-                        })
+                        .introspect(.scrollView, on: .iOS(.v16, .v17, .v18)) { scrollView in
+                            scrollView.clipsToBounds = false
+                        }
 #endif
                         .onTapGesture {
                             isTextFieldFocused = false
