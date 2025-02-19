@@ -46,7 +46,7 @@ class OllamaService: @unchecked Sendable {
     
     func sendMessage(_ input: String, data: Data? = nil) async throws -> AsyncThrowingStream<String, Error> {
         do {
-            return try await chatStream(input)
+            return try await chatStream(input, data: data)
         } catch {
             appendNewMessage(input: input, reply: "")
             throw error
@@ -59,11 +59,18 @@ class OllamaService: @unchecked Sendable {
         return decoder
     }()
     
-    func chatStream(_ input: String) async throws -> AsyncThrowingStream<String, Error> {
+    func chatStream(_ input: String, data: Data? = nil) async throws -> AsyncThrowingStream<String, Error> {
         do {
+            
             let chatRequest = OllamaChatRequest(
                 model: configuration.model,
-                messages: messages + [Message(role: "user", content: input)]
+                messages: messages + [
+                    Message(
+                        role: "user",
+                        content: input,
+                        images: data != nil ? [data!.base64EncodedString()] : nil
+                    )
+                ]
             )
             
             guard let url = URL(string: AppConfiguration.shared.ollamaAPIHost + "/api/chat") else {

@@ -38,7 +38,15 @@ struct ComposerInputView: View {
             if let data = session.sendingData {
                 animationImageView(data)
             } else if let data = session.inputData {
-                imageView(data)
+                VStack {
+                    imageView(data)
+                    Divider()
+                    TextField("", text: $session.input, axis: .vertical)
+                        .focused($isTextFieldFocused)
+                        .lineLimit(1...1)
+                        .padding(.leading, 12)
+                        .padding(.trailing, size + 6)
+                }
             } else if session.isSending {
                 animationTextView
             }

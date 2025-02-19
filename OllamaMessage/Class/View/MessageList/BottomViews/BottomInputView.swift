@@ -65,3 +65,14 @@ struct BottomInputView: View {
     
     
 }
+
+#Preview {
+    @Namespace var namespace
+
+    VStack {
+        Spacer()
+        BottomInputView(session: DialogueSession(), isLoading: .constant(false),namespace: namespace, send: { _ in })
+    }
+
+        
+}

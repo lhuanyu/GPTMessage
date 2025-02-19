@@ -125,10 +125,12 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
     
     @MainActor
     func send(scroll: ((UnitPoint) -> Void)? = nil) async {
-        if input.isEmpty, let inputData = inputData {
+        if let inputData = inputData {
             sendingData = inputData
             self.inputData = nil
-            await send(text: "An image", data: sendingData, scroll: scroll)
+            let text = input
+            input = ""
+            await send(text: text, data: sendingData, scroll: scroll)
         } else {
             let text = input
             input = ""

@@ -20,6 +20,8 @@ enum OllamaModelProvider: String {
         switch self {
         case .unknown:
             return nil
+        case .llama:
+            return URL(string: "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/ollama.png")
         default:
             return URL(string: "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/light/\(rawValue)-color.png")
         }

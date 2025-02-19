@@ -78,6 +78,7 @@ struct LeadingComposerView: View {
                         if let data = data {
                             DispatchQueue.main.async {
                                 isLoading = false
+                                self.imageSelection = nil
                                 withAnimation {
                                     session.inputData = data
                                 }

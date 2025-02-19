@@ -151,6 +151,7 @@ struct ConversationView: View {
         }
     }
     
+    @ViewBuilder
     var senderMessage: some View {
         HStack(spacing: 0) {
             Spacer()
@@ -164,6 +165,15 @@ struct ConversationView: View {
                 senderMessageContent
                     .frame(minHeight: 24)
                     .bubbleStyle(isMyMessage: true, type: conversation.inputType)
+            }
+        }
+        if conversation.inputData != nil {
+            HStack(spacing: 0) {
+                Spacer()
+                Text(conversation.input)
+                    .textSelection(.enabled)
+                    .frame(minHeight: 24)
+                    .bubbleStyle(isMyMessage: true, type: .text)
             }
         }
     }

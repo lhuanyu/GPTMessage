@@ -116,10 +116,8 @@ struct AppSettingsView: View {
 }
 
 
-struct AppSettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            AppSettingsView(configuration: AppConfiguration())
-        }
+#Preview {
+    NavigationStack {
+        AppSettingsView(configuration: AppConfiguration())
     }
 }
