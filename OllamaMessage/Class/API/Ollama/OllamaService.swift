@@ -31,7 +31,9 @@ class OllamaService: @unchecked Sendable {
     
     func createSuggestions() async throws -> [String] {
         let chatHistory = messages.reduce("") { $0 + "[\($1.role)]\($1.content)" + "\n" }
-        let prompt = "Generate \(suggestionsCount) suggestions for user input based on the conversation below: \n\(chatHistory)\n The suggestions should use the same language as the main language of the conversation. The suggestions should be short and unique. Return the suggestions only in an array format, such as: [suggestion1, suggestion2, suggestion3], do not use markdown syntax."
+        let prompt = """
+        Generate \(suggestionsCount) suggestions for user input based on the conversation below: \n\(chatHistory)\n The suggestions should use the same language as the main language of the conversation. The suggestions should be short and unique. Return the suggestions only in an array format, such as: ["suggestion1", "suggestion2", "suggestion3"], do not use markdown syntax. You must return \(suggestionsCount) suggestions.
+        """
         let suggestions = try await chat(prompt, includingHistory: false)
         print("Suggestions: \(suggestions)")
         return suggestions.normalizedPrompts
@@ -159,10 +161,10 @@ extension String {
     }
     
     var normalizedPrompts: [String] {
-        ///Use regex to extract suggestions from the ["Compare the prices", "Analyze the market trends", "Suggest budget alternatives"]
+        /// Use regex to extract suggestions from the ["Compare the prices", "Analyze the market trends", "Suggest budget alternatives"]
         let pattern = #""([^"]*)""#
         let regex = try! NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count))
+        let matches = regex.matches(in: self, options: [], range: NSRange(location: 0, length: utf16.count))
         var result = [String]()
         for match in matches {
             if let range = Range(match.range(at: 1), in: self) {
@@ -172,7 +174,3 @@ extension String {
         return result
     }
 }
-
-
-
-

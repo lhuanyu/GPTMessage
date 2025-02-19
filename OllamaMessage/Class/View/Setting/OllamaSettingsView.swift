@@ -8,7 +8,6 @@
 import SwiftUI
 
 class OllamaConfiguration: ObservableObject {
-    
     static let shared = OllamaConfiguration()
     
     @AppStorage("ollamaAPIHost") var apiHost: String = ""
@@ -34,12 +33,10 @@ class OllamaConfiguration: ObservableObject {
         } catch {
             print(error)
         }
-
     }
 }
 
 struct OllamaSettingsView: View {
-    
     @AppStorage("configuration.model") var modelName: String = ""
     
     @AppStorage("ollamaAPIHost") var apiHost: String = ""
@@ -86,7 +83,9 @@ struct OllamaSettingsView: View {
                 await fetchModels()
             }
         }
+        #if os(iOS)
         .navigationBarTitle("Ollama")
+        #endif
     }
     
     @State private var isFetching = true
@@ -115,11 +114,8 @@ struct OllamaSettingsView: View {
         } catch {
             print(error)
         }
-
     }
-    
 }
-
 
 #Preview {
     OllamaSettingsView()

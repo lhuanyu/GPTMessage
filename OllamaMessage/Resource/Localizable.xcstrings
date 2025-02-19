@@ -276,7 +276,6 @@
       }
     },
     "Name:" : {
-      "extractionState" : "migrated",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -408,7 +407,6 @@
       }
     },
     "Prompt:" : {
-      "extractionState" : "migrated",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -563,7 +561,7 @@
       }
     },
     "Text2Image:" : {
-      "extractionState" : "migrated",
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

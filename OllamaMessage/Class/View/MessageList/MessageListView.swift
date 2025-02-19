@@ -77,7 +77,7 @@ struct MessageListView: View {
                 }
             }
 #else
-            .navigationTitle(session.configuration.model.rawValue)
+            .navigationTitle(session.configuration.model)
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button {
