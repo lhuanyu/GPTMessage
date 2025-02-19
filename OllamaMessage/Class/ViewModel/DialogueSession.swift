@@ -259,8 +259,10 @@ class DialogueSession: ObservableObject, Identifiable, Equatable, Hashable, Coda
                 let suggestions = try await service.createSuggestions()
                 print(suggestions)
 #if os(iOS)
-                self.suggestions = suggestions
                 withAnimation {
+                    self.suggestions = suggestions
+                }
+                withAnimation(after: .milliseconds(250)) {
                     scroll?(.bottom)
                 }
 #else
