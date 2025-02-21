@@ -5,11 +5,9 @@
 //  Created by LuoHuanyu on 2023/3/17.
 //
 
-
 import SwiftUI
 
 struct ComposerInputView: View {
-    
     @ObservedObject var session: DialogueSession
     @FocusState var isTextFieldFocused: Bool
     let namespace: Namespace.ID
@@ -46,6 +44,9 @@ struct ComposerInputView: View {
                         .lineLimit(1...1)
                         .padding(.leading, 12)
                         .padding(.trailing, size + 6)
+#if os(macOS)
+                        .textFieldStyle(.plain)
+#endif
                 }
             } else if session.isSending {
                 animationTextView
@@ -72,9 +73,9 @@ struct ComposerInputView: View {
                 .padding(.leading, 12)
                 .padding(.trailing, size + 6)
                 .frame(minHeight: size)
-    #if os(macOS)
+#if os(macOS)
                 .textFieldStyle(.plain)
-    #endif
+#endif
         } else {
             EmptyView()
         }
@@ -148,9 +149,7 @@ struct ComposerInputView: View {
             .keyboardShortcut(.defaultAction)
         } else {
 #if os(iOS)
-            Button {
-                
-            } label: {
+            Button {} label: {
                 Image(systemName: "mic")
                     .resizable()
                     .scaledToFit()
@@ -158,22 +157,17 @@ struct ComposerInputView: View {
                     .foregroundColor(.secondary)
                     .opacity(0.7)
             }
-            .offset(x:-4, y: -4)
+            .offset(x: -4, y: -4)
 #endif
         }
     }
-    
 }
 
-
 struct ComposerInputView_Previews: PreviewProvider {
-    
     @Namespace static var namespace
     
     static var previews: some View {
         ComposerInputView(session: .init(), namespace: namespace) { _ in
-
         }
     }
-
 }
