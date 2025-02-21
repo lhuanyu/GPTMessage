@@ -1,74 +1,38 @@
-# GPTMessage
-A SwiftUI app demonstrating how ChatGPT interacts with DALL·E and HuggingFace models for iOS and macOS.
+# OllamaMessage
 
-This is what the app looks like on iOS:
-<p float="left">
-  <img src="screenshot.jpg" width="400" />
-  <img src="screenshot1.jpg" width="400" /> 
-</p>
-
-And macOS:
-<p float="left">
-  <img src="screenshot_macOS.jpg" width="800"/>
-</p>
-
-## Feautures
-### Chat Completion
-
-Chat Completion is driven by OpenAI's chat language models, including gpt-3.5-turbo and gpt-3.5-turbo-0301.
-### Image Generation
-
-Image Generation uses OpenAI's image generation API(DALL·E) and HuggingFace's Inference API to create images.
-
-To start drawing, simply send a message beginning with "Draw". For example, you could say `Draw a close-up, studio photographic portrait of a curious-looking blue British Shorthair cat`.
-
-`Draw something` is a hardcoded prompt. However, when Smart Mode is enabled, ChatGPT will classify your prompt and select the most appropriate model to handle it. Therefore, you could ask, `Can you assist me in creating a close-up, studio photographic portrait of a curious-looking blue British Shorthair cat?`.
-
-OpenAI's DALL·E is the preferred option since it's stable and fast(but expensive). You can easily switch to Hugging Face's Inference API(like [stable-diffusion-v1-5](https://huggingface.co/runwayml/stable-diffusion-v1-5) or [stabilityai/stable-diffusion-2-1](https://huggingface.co/stabilityai/stable-diffusion-2-1)) in the settings.
-
-### Image Caption
-
-By connecting ChatGPT with an Image Caption model such as [nlpconnect/vit-gpt2-image-captioning](https://huggingface.co/nlpconnect/vit-gpt2-image-captioning) from Hugging Face, we can easily integrate the image captioning task with the image generation task.
+OllamaMessage is an iMessage-style application designed for interacting with the Ollama service. It supports both iOS and macOS, providing a seamless chat experience.
 
 <p float="left">
-  <img src="screenshot_macOS_image_caption.jpg" width="800"/>
+  <img src="screenshot_01.jpg" width="300" />
+  <img src="screenshot_02.jpg" width="300" /> 
+  <img src="screenshot_03.jpg" width="300" /> 
 </p>
 
-<p float="left">
-  <img src="screenshot_image_caption.jpg" width="400" />
-  <img src="screenshot_image_caption1.jpg" width="400" />
-</p>
 
-## Prompts
+## Features
 
-Default prompts come from **[Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts)**.
+- **iMessage UI Design**: A sleek and familiar chat interface inspired by iMessage.
+- **Cross-Platform Support**: Compatible with both iOS and macOS.
+- **Ollama Service Integration**: Seamless connection to the Ollama service for intelligent conversations.
+- **Message History**: Keeps track of previous conversations for easy reference.
+- **Quick Replies**: Enables fast responses for efficient communication.
 
-### iOS
+## Installation
 
-Click the person icon or type '/' to show the prompts list.
+### Requirements
 
-### macOS
+- iOS 16.0, macOS 13.0
 
-Type '/' to show the prompts list.
+### Build from Source
 
-## Usage
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/lhuanyu/OllamaMessage
+   cd OllamaMessage
+   ```
+2. Open the project in Xcode.
+3. Select the target device (iOS or macOS), then build and run the project.
 
-Set your OpenAI API key in the `AppConfiguration`.
+## License
 
-```swift
-class AppConfiguration: ObservableObject {
-        
-    @AppStorage("configuration.key") var key = "OpenAI API Key"
-    
-}
-```
-
-Set your Hugging Face User Access Token in the `HuggingFaceConfiguration`.
-
-```swift
-class HuggingFaceConfiguration: ObservableObject {
-        
-    @AppStorage("huggingFace.key") var key: String = ""
-    
-}
-```
+This project is licensed under the [MIT License](LICENSE). Feel free to use and modify it.
