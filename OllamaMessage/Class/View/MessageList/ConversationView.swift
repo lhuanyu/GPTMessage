@@ -160,7 +160,14 @@ struct ConversationView: View {
                 senderMessageContent
                     .frame(minHeight: 24)
                     .bubbleStyle(isMyMessage: true, type: conversation.inputType)
+#if os(iOS)
                     .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
+#else
+                    .modify(if: conversation.inputData == nil) { view in
+                        view
+                            .matchedGeometryEffect(id: AnimationID.senderBubble, in: namespace)
+                    }
+#endif
             } else {
                 senderMessageContent
                     .frame(minHeight: 24)
@@ -242,15 +249,13 @@ struct ConversationView: View {
                             TextMessageView(
                                 think: String(think),
                                 text: text,
-                                isReplying: conversation.isReplying
-                            )
+                                isReplying: conversation.isReplying)
                         } else if reply.hasPrefix("<think>") {
                             let think = reply.trimmingPrefix("<think>").trimmingCharacters(in: .whitespacesAndNewlines)
                             TextMessageView(
                                 think: String(think),
                                 text: "",
-                                isReplying: conversation.isReplying
-                            )
+                                isReplying: conversation.isReplying)
                         } else {
                             TextMessageView(text: reply, isReplying: conversation.isReplying)
                         }
